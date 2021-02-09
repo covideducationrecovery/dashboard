@@ -12,6 +12,9 @@
       a {text-decoration: none;}
       input[type="checkbox"] {display: none;}
       ul {list-style: none; padding-left: 0;}
+
+      #header {top: 0; position: sticky; background-color: white; border-bottom: 1px solid black;}
+
       .responsible-organization {padding: 10px; margin: 10px; border: 5px solid}
       .list-JHU {border-color: purple }
       .list-UNICEF {border-color: lightblue}
@@ -28,9 +31,15 @@
       .country a i {margin-right: 5px;}
 
       .loading-cover {height: 100%; display: flex; justify-content: center; align-items: center;}
-      .hidden, [v-cloak] {display: none}
+      .hidden, [v-cloak] {display: none;}
+      .text-center {text-align: center;}
 
       {% include worldmap.css %}
+
+
+      .has-response {fill: lightgreen;}
+      section#header div {margin: auto;}
+      #svg-worldmap {max-width: 1024px; margin: auto;}
     </style>
     {% if site.safe == true %}
     <script src="/js/vue.min.js" type="text/javascript"></script>
@@ -47,9 +56,20 @@
     <div id="vue-app" v-cloak>
       <section id="header">
         <h2>Global Survey Response Dashboard</h2>
+        <p>
+          <span class="listcount" x-target="countries"></span>
+          since 
+          <i onClick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() - 864E5)" class="fas fa-minus-circle"></i>
+          ${filterDate.toLocaleDateString()} 
+          <i onClick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() + 864E5)" class="fas fa-plus-circle"></i>
+        </p>
+      </section>
+      <section id="map" class="text-center">
+        <div>
+          {% include worldmap.svg %}
+        </div>  
       </section>
       <section id="countries">
-        <p><span class="listcount" x-target="countries"></span> since <i onClick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() - 864E5)" class="fas fa-minus-circle"></i> ${filterDate.toLocaleDateString()} <i onClick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() + 864E5)" class="fas fa-plus-circle"></i></p>
         <ul>
           <li v-for="responsibleOrganization in responsibleOrganizations">
             <div class="responsible-organization" v-bind:class="('list-' + responsibleOrganization)">
@@ -65,8 +85,8 @@
                   </h4>
                   <ul class="countries" v-bind:id="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)">
                     <li v-for="country in filterCountries(countries, responsibleOrganization, wbRegion.wbRegionCode)" class="country">
-                      <input v-bind:id="('hasresponse-' + country.fields.iso3166Alpha2Code)" type="checkbox" v-bind:checked="hasResponse(country, filterDate)" disabled />
-                      <label v-bind:for="('hasresponse-' + country.fields.iso3166Alpha2Code)">
+                      <input v-bind:id="('country-' + country.fields.iso3166Alpha2Code)" type="checkbox" v-bind:checked="hasResponse(country, filterDate)" disabled />
+                      <label v-bind:for="('country-' + country.fields.iso3166Alpha2Code)">
                         <div>
                           <p><i v-if="hasResponse(country, filterDate)" class="fas fa-check"></i><i v-else class="fas fa-times"></i> ${country.fields.countryName}<p>
                           <a v-bind:href="country | retakeLastResponseUrl" target="_blank"><i class="fas fa-redo"></i>Retake last response</a>
@@ -81,12 +101,6 @@
           </li>
         </ul>  
       </section>
-      <section id="map" class="hidden">
-        <div>
-          {% include worldmap.svg %}
-        </div>  
-      </section>
-
     </div>
   
     <script>
@@ -130,6 +144,30 @@
         })
       }
 
+      function updateMap() {
+        const worldMap = document.getElementById('svg-worldmap');
+
+        //clear the class attributes from the map
+        [...worldMap.getElementsByClassName('has-response')].forEach((item) => {
+          item.classList.remove('has-response');
+        })
+
+        //set the attributes based upon the checked items
+        if (worldMap) {
+          [...document.querySelectorAll('.countries li input[type="checkbox"]')].forEach((item) => {
+            const iso3166Alpha2Code = item.id.split("-").pop().toLowerCase();
+            if (iso3166Alpha2Code) {
+              if (item.checked) {
+                svgGroup = worldMap.getElementById(iso3166Alpha2Code)
+                if (svgGroup) {
+                  svgGroup.classList.add('has-response');
+                }
+              }
+            }
+          })
+        }
+      }
+
       function renderData(countries) {
         countries.sort(sortCountries);
         const data = {
@@ -163,10 +201,12 @@
           mounted() {
             document.getElementById('loading').classList.add('hidden');
             updateListCounts();
+            updateMap();
           },
           updated: function () {
             this.$nextTick(function () {
               updateListCounts();
+              updateMap();
             })
           },
           filters: {
