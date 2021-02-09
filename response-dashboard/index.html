@@ -179,9 +179,9 @@
 
 
       {% if site.safe == true %}
-      const dataSource = 'https://evening-retreat-17703.herokuapps.com/countries';
+      const dataSource = 'https://evening-retreat-17703.herokuapp.com/countries';
       {% else %}
-      const dataSource = 'http://localhost:3000/countries';
+      const dataSource = 'https://evening-retreat-17703.herokuapp.com/countries';
       {% endif %}
       // load the json data file and once it's ready, render it;
       // errors thrown during any step of this process will be handled by the .catch
