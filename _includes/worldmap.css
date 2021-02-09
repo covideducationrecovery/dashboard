@@ -11,7 +11,7 @@
 .coastxx {opacity: 1.0; fill: #303030; stroke-width: 0.2;}
  
 /* Styles for territories without permanent population (the largest of which is Antarctica) */
-.antxx {opacity: 1.0; fill: #303030;}
+.antxx {opacity: 0.0; fill: #303030;}
  
 /* Circles around small countries without permanent population */
 .noxx {opacity: 1.0; fill: #303030; stroke: #000000; stroke-width: 0.5;}

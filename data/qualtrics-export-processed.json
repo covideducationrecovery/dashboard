@@ -1,0 +1,910 @@
+[
+  {
+    "metadata": {
+      "respondentEmail": "Test",
+      "responseType": "Testing",
+      "responseDate": "2020-12-16T17:34:29.000Z",
+      "recordId": "R_2rupKAYsWoHYy2N"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Test",
+      "responseType": "Testing",
+      "responseDate": "2020-12-16T17:44:31.000Z",
+      "recordId": "R_R4iqv0FtFznF1N7"
+    },
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "ar",
+      "responseType": "Testing",
+      "responseDate": "2020-12-29T16:45:11.000Z",
+      "recordId": "R_1mE4xrGOOJX71ZW"
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Kali Azzi-Huck",
+      "responseType": "Testing",
+      "responseDate": "2021-01-04T19:08:58.000Z",
+      "recordId": "R_TtqvbJ3JC3gVVzX"
+    },
+    "noEducation": true,
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Yinan Zhang",
+      "responseType": "Testing",
+      "responseDate": "2021-01-04T19:39:45.000Z",
+      "recordId": "R_3PH8XGXMeYaPF6Y"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Yinan Zhang",
+      "responseType": "Testing",
+      "responseDate": "2021-01-04T19:47:39.000Z",
+      "recordId": "R_7ZFoLWInjBewIlH"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Kabira Namit",
+      "responseType": "Testing",
+      "responseDate": "2021-01-04T20:24:15.000Z",
+      "recordId": "R_3GxZAnuUbMxuuLL"
+    },
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Kabira Namit",
+      "responseType": "Testing",
+      "responseDate": "2021-01-04T20:27:03.000Z",
+      "recordId": "R_rjcPhtHNoJZNaFP"
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Maria Barron",
+      "responseType": "Testing",
+      "responseDate": "2021-01-04T20:30:52.000Z",
+      "recordId": "R_Z82mwJ2Ff01eCch"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Tigran",
+      "responseType": "Testing",
+      "responseDate": "2021-01-04T20:34:49.000Z",
+      "recordId": "R_BttTYLwsGcKOwDL"
+    },
+    "inPersonEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Maria Barron",
+      "responseType": "Testing",
+      "responseDate": "2021-01-04T21:14:59.000Z",
+      "recordId": "R_2e2Lm05JchDy8La"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Mirvat Haddad",
+      "responseType": "Testing",
+      "responseDate": "2021-01-04T23:12:03.000Z",
+      "recordId": "R_1pzpxcXDZkLwa6t"
+    },
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Juan Diego Alonso",
+      "responseType": "Testing",
+      "responseDate": "2021-01-04T23:12:04.000Z",
+      "recordId": "R_1IK8x3Qz6AS4yAX"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "JSDA",
+      "responseType": "Testing",
+      "responseDate": "2021-01-05T03:07:09.000Z",
+      "recordId": "R_stG0y7uR51uX9M5"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Aarya",
+      "responseType": "Testing",
+      "responseDate": "2021-01-05T12:08:41.000Z",
+      "recordId": "R_2UixW9LtOk8MZBj"
+    },
+    "remoteEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "as",
+      "responseType": "Testing",
+      "responseDate": "2021-01-05T12:16:31.000Z",
+      "recordId": "R_276UUX9dsdbnht0"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Megan Collins",
+      "responseType": "Testing",
+      "responseDate": "2021-01-05T16:57:19.000Z",
+      "recordId": "R_300gRAuHp4kcM20"
+    },
+    "inPersonEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Paula Flores",
+      "responseType": "Testing",
+      "responseDate": "2021-01-05T17:51:27.000Z",
+      "recordId": "R_DB6rLKg6cLjFSHD"
+    },
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "sdf",
+      "responseType": "Testing",
+      "responseDate": "2021-01-05T18:13:04.000Z",
+      "recordId": "R_2Sq55r9njFuqQXq"
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "moo@moo.moo",
+      "responseType": "Testing",
+      "responseDate": "2021-01-05T22:45:51.000Z",
+      "recordId": "R_sKZm3GZb6PRTpEB"
+    },
+    "country": {
+      "identifier": "208"
+    },
+    "nonCovidClosure": true,
+    "vaccinations": {
+      "availableInCountry": true
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Amira Nikolas",
+      "responseType": "Testing",
+      "responseDate": "2021-01-05T23:00:04.000Z",
+      "recordId": "R_3KBMMgXJX2AzwDW"
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "dstolt@gmail.com",
+      "responseType": "Testing",
+      "responseDate": "2021-01-06T10:25:35.000Z",
+      "recordId": "R_3M6aZDYiDi03y89"
+    },
+    "country": {
+      "identifier": "70"
+    },
+    "vaccinations": {
+      "availableInCountry": true
+    },
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "kazzi-huck@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-06T16:58:14.000Z",
+      "recordId": "R_8wf9l1pMh99CJtT"
+    },
+    "country": {
+      "identifier": "5"
+    },
+    "vaccinations": {
+      "availableInCountry": true,
+      "availableToSchoolStaff": true
+    },
+    "inPersonEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "kazzi-huck@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-06T17:05:00.000Z",
+      "recordId": "R_7aE4UegeNMZLoel"
+    },
+    "country": {
+      "identifier": "5"
+    },
+    "nonCovidClosure": true,
+    "vaccinations": {
+      "availableInCountry": true
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "kazzi-huck@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-06T17:19:15.000Z",
+      "recordId": "R_1jCIDsER23SsdqE"
+    },
+    "country": {
+      "identifier": "204"
+    },
+    "vaccinations": {
+      "availableInCountry": true
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Yinan",
+      "responseType": "Testing",
+      "responseDate": "2021-01-07T19:54:22.000Z",
+      "recordId": "R_26nxulq48hNaFGd"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "esedmik@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-07T20:56:37.000Z",
+      "recordId": "R_3KVeIp1ZpbxQyAP"
+    },
+    "country": {
+      "identifier": "94"
+    },
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "esedmik@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-07T21:02:47.000Z",
+      "recordId": "R_1KvjvqcwmKLU9F8"
+    },
+    "country": {
+      "identifier": "94"
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "jsaavedra@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-07T22:26:28.000Z",
+      "recordId": "R_3popl4GDJnOkc9X"
+    },
+    "country": {
+      "identifier": "155"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "jsaavedra@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-07T22:30:19.000Z",
+      "recordId": "R_2v2GtRmjDW9uvKk"
+    },
+    "country": {
+      "identifier": "155"
+    },
+    "remoteEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "jsaavedra@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-07T23:07:14.000Z",
+      "recordId": "R_ZdAf0b06aUtCw3n"
+    },
+    "country": {
+      "identifier": "209"
+    },
+    "remoteEducation": true,
+    "hybridEducation": true,
+    "inPersonEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Laura",
+      "responseType": "Testing",
+      "responseDate": "2021-01-08T00:31:04.000Z",
+      "recordId": "R_12ap9iXtfdlE7iQ"
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "KN",
+      "responseType": "Testing",
+      "responseDate": "2021-01-08T02:00:38.000Z",
+      "recordId": "R_PBqJ2m7bjB74iGd"
+    },
+    "noEducation": true,
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Kabira Namit",
+      "responseType": "Testing",
+      "responseDate": "2021-01-08T02:31:56.000Z",
+      "recordId": "R_2uICST1RTSFQkZg"
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "J",
+      "responseType": "Testing",
+      "responseDate": "2021-01-08T03:23:54.000Z",
+      "recordId": "R_s6l1aam1x7PoaB3"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Aarya S",
+      "responseType": "Testing",
+      "responseDate": "2021-01-08T12:15:56.000Z",
+      "recordId": "R_3rIDBKmC6xESmKj"
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "o",
+      "responseType": "Testing",
+      "responseDate": "2021-01-08T15:46:46.000Z",
+      "recordId": "R_3jHV1GT2hjCT2sp"
+    },
+    "inPersonEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Megan Collins",
+      "responseType": "Testing",
+      "responseDate": "2021-01-08T16:58:17.000Z",
+      "recordId": "R_1mfJrBojRmzNzmu"
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "atariq6@jhmi.edu",
+      "responseType": "Testing",
+      "responseDate": "2021-01-08T21:17:22.000Z",
+      "recordId": "R_2djaNAsgJ5pEwus"
+    },
+    "country": {
+      "identifier": "14"
+    },
+    "vaccinations": {
+      "availableInCountry": true
+    },
+    "remoteEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "esedmik@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-10T21:41:43.000Z",
+      "recordId": "R_eEVAmXhOVeLwqvn"
+    },
+    "country": {
+      "identifier": "94"
+    },
+    "remoteEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Tshmis@worldank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-13T18:15:51.000Z",
+      "recordId": "R_SUaaCnCFRmnkaTD"
+    },
+    "country": {
+      "identifier": "162"
+    },
+    "vaccinations": {
+      "availableInCountry": true,
+      "availableToSchoolStaff": true
+    },
+    "remoteEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "tlinden@dds.edu",
+      "responseType": "Testing",
+      "responseDate": "2021-01-13T21:22:13.000Z",
+      "recordId": "R_2fCd8LlPf6jlY7C"
+    },
+    "country": {
+      "identifier": "24"
+    },
+    "vaccinations": {
+      "availableInCountry": true
+    },
+    "noEducation": true,
+    "remoteEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "mpasic@unicef.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-14T04:19:44.000Z",
+      "recordId": "R_yjOJD4xUUi3SlVf"
+    },
+    "country": {
+      "identifier": "68"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "Test@toto.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-14T11:35:10.000Z",
+      "recordId": "R_yl6MsJjiiT1MiB3"
+    },
+    "country": {
+      "identifier": "17"
+    },
+    "remoteEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "msachs-israel@unicef.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-14T12:51:20.000Z",
+      "recordId": "R_1LYHxqq1BxDhRgR"
+    },
+    "country": {
+      "identifier": "14"
+    },
+    "nonCovidClosure": true,
+    "vaccinations": {
+      "availableInCountry": true,
+      "availableToSchoolStaff": true
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "pdewan@unicef.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-14T12:56:36.000Z",
+      "recordId": "R_6m3xeIXlSCiuoM1"
+    },
+    "country": {
+      "identifier": "7"
+    },
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "mcolli36@jhmi.edu",
+      "responseType": "Testing",
+      "responseDate": "2021-01-14T17:05:43.000Z",
+      "recordId": "R_3hu6RZCsRksQcoh"
+    },
+    "country": {
+      "identifier": "6"
+    },
+    "noEducation": true,
+    "remoteEducation": true,
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "asava@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-14T17:19:50.000Z",
+      "recordId": "R_2zl4l10YDW43GFy"
+    },
+    "country": {
+      "identifier": "161"
+    },
+    "vaccinations": {
+      "availableInCountry": true
+    },
+    "remoteEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "dnikolaev@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-15T06:56:06.000Z",
+      "recordId": "R_2rUaEoXiHldMv1K"
+    },
+    "country": {
+      "identifier": "207"
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "pfountikov@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-15T07:26:13.000Z",
+      "recordId": "R_3Gg0IVYAaZfyWea"
+    },
+    "country": {
+      "identifier": "20"
+    },
+    "vaccinations": {
+      "availableInCountry": true
+    },
+    "inPersonEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "asava@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-15T08:18:38.000Z",
+      "recordId": "R_1qfzhIa0DCpQFdP"
+    },
+    "country": {
+      "identifier": "161"
+    },
+    "vaccinations": {
+      "availableInCountry": true,
+      "availableToSchoolStaff": true
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "asava@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-15T08:38:42.000Z",
+      "recordId": "R_1Kfp4ivUK11IAgH"
+    },
+    "country": {
+      "identifier": "161"
+    },
+    "vaccinations": {
+      "availableInCountry": true,
+      "availableToSchoolStaff": true
+    },
+    "remoteEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "asava@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-15T08:39:34.000Z",
+      "recordId": "R_1Ic8OUjtBBtEvqi"
+    },
+    "country": {
+      "identifier": "15"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "pfountikov@gmail.com",
+      "responseType": "Testing",
+      "responseDate": "2021-01-15T11:04:52.000Z",
+      "recordId": "R_3j96X8jc5IAOpp2"
+    },
+    "country": {
+      "identifier": "20"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "sdvsad@fv.com",
+      "responseType": "Testing",
+      "responseDate": "2021-01-15T11:12:19.000Z",
+      "recordId": "R_2S3o505hSFI5QYt"
+    },
+    "country": {
+      "identifier": "14"
+    },
+    "noEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "dsfs@tut.by",
+      "responseType": "Testing",
+      "responseDate": "2021-01-15T11:15:23.000Z",
+      "recordId": "R_3I0tX81s77AW9Iz"
+    },
+    "country": {
+      "identifier": "31"
+    },
+    "noEducation": true,
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "mbarronrodriguez@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-15T18:09:09.000Z",
+      "recordId": "R_1ly3o8V1QD301NG"
+    },
+    "country": {
+      "identifier": "155"
+    },
+    "noEducation": true,
+    "remoteEducation": true,
+    "hybridEducation": true,
+    "inPersonEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "nreuge@unicef.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-16T01:50:55.000Z",
+      "recordId": "R_3MzfcVkBdGijPdw"
+    },
+    "vaccinations": {
+      "availableInCountry": true
+    },
+    "noEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "caedo@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-16T19:53:51.000Z",
+      "recordId": "R_eeZf9LBPanBxK9z"
+    },
+    "country": {
+      "identifier": "1"
+    },
+    "nonCovidClosure": true,
+    "vaccinations": {
+      "availableInCountry": true
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "akazem@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-17T15:10:28.000Z",
+      "recordId": "R_32PHLCMLw91I45z"
+    },
+    "country": {
+      "identifier": "61"
+    }
+  },
+  {
+    "metadata": {
+      "respondentEmail": "nejaz@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-18T07:32:54.000Z",
+      "recordId": "R_2t3gp9hCQXyIoEO"
+    },
+    "country": {
+      "identifier": "150"
+    },
+    "remoteEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "asava@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-18T08:41:03.000Z",
+      "recordId": "R_1YTbWtUpjsQmRhL"
+    },
+    "country": {
+      "identifier": "161"
+    },
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "df@tut.by",
+      "responseType": "Testing",
+      "responseDate": "2021-01-18T11:20:54.000Z",
+      "recordId": "R_UY1al2qqKGoReJX"
+    },
+    "country": {
+      "identifier": "164"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "tasaduzzaman@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-18T16:29:27.000Z",
+      "recordId": "R_2pMkBli9TWlGrVu"
+    },
+    "country": {
+      "identifier": "18"
+    },
+    "remoteEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "sdsa@jh.edu",
+      "responseType": "Testing",
+      "responseDate": "2021-01-18T21:13:52.000Z",
+      "recordId": "R_2VJana1ueVgik1I"
+    },
+    "country": {
+      "identifier": "13"
+    },
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "asmeby@unicef.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-19T01:28:48.000Z",
+      "recordId": "R_10Z6JjvCRMHRnUI"
+    },
+    "country": {
+      "identifier": "68"
+    },
+    "inPersonEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "msherpa@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-19T03:38:19.000Z",
+      "recordId": "R_3DzTdW5OfWiCVl7"
+    },
+    "country": {
+      "identifier": "140"
+    },
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "msharma9@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-19T04:44:29.000Z",
+      "recordId": "R_12PHS95VotkQzaG"
+    },
+    "country": {
+      "identifier": "91"
+    },
+    "vaccinations": {
+      "availableInCountry": true
+    },
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "asofizada@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-19T08:51:19.000Z",
+      "recordId": "R_1N4idOacg1KQrOb"
+    },
+    "country": {
+      "identifier": "1"
+    },
+    "nonCovidClosure": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "pdarvas@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-20T19:13:12.000Z",
+      "recordId": "R_3FOQZ3gAe0xFhYi"
+    },
+    "country": {
+      "identifier": "25"
+    },
+    "vaccinations": {
+      "availableInCountry": true
+    },
+    "remoteEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "kazzi-huck@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-21T04:49:57.000Z",
+      "recordId": "R_3kzSqzpi4XEel0i"
+    },
+    "country": {
+      "identifier": "5"
+    },
+    "vaccinations": {
+      "availableInCountry": true,
+      "availableToSchoolStaff": true
+    },
+    "inPersonEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "mbarronrodriguez@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-21T21:32:21.000Z",
+      "recordId": "R_3lQFs44iHfzq7dV"
+    },
+    "country": {
+      "identifier": "10"
+    },
+    "vaccinations": {
+      "availableInCountry": true,
+      "availableToSchoolStaff": true
+    },
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "mbarronrodriguez@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-21T21:40:06.000Z",
+      "recordId": "R_1LXt7FSDTrCfPWI"
+    },
+    "country": {
+      "identifier": "11"
+    },
+    "vaccinations": {
+      "availableInCountry": true,
+      "availableToSchoolStaff": true
+    },
+    "inPersonEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "mariabarronr@gmail.com",
+      "responseType": "Testing",
+      "responseDate": "2021-01-21T21:50:08.000Z",
+      "recordId": "R_2zClzAbseTIruZ6"
+    },
+    "remoteEducation": true,
+    "hybridEducation": true,
+    "inPersonEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "mbarronrodriguez@worldbank.org",
+      "responseType": "Testing",
+      "responseDate": "2021-01-21T21:59:47.000Z",
+      "recordId": "R_3PFRxo4YtldwDIw"
+    },
+    "country": {
+      "identifier": "12"
+    },
+    "vaccinations": {
+      "availableInCountry": true
+    },
+    "noEducation": true,
+    "remoteEducation": true,
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "dmayasherpa@gmail.com",
+      "responseDate": "2021-01-22T04:00:26.000Z",
+      "recordId": "R_bBet56ViBfBFsLT"
+    },
+    "country": {
+      "identifier": "140"
+    },
+    "hybridEducation": true
+  },
+  {
+    "metadata": {
+      "respondentEmail": "meghna210@yahoo.com",
+      "responseDate": "2021-01-22T14:21:19.000Z",
+      "recordId": "R_1cYBox5EJVxKuoD"
+    },
+    "country": {
+      "identifier": "91"
+    },
+    "vaccinations": {
+      "availableInCountry": true
+    },
+    "remoteEducation": true
+  }
+]

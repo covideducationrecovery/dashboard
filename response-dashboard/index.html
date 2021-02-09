@@ -1,0 +1,196 @@
+---
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Global Survey Response Dashboard</title>
+    <style>
+      html, body
+      body {background: white; margin: auto; font-family: sans-serif;}
+      a {text-decoration: none;}
+      input[type="checkbox"] {display: none;}
+      ul {list-style: none; padding-left: 0;}
+      .responsible-organization {padding: 10px; margin: 10px; border: 5px solid}
+      .list-JHU {border-color: purple }
+      .list-UNICEF {border-color: lightblue}
+      .list-WB {border-color: blue}
+      .countries {display: flex; flex-flow: row wrap;}
+      .country {background-color: grey; margin: 3px;}
+      .country input[type="checkbox"] ~ label div {display: block; background-color: lightgrey; padding: 10px;}
+      .country input[type="checkbox"]:checked ~ label div {background-color:lightgreen;}
+
+      .country div p {font-size: large;}
+      .country a {background-color: midnightblue; color: white; padding: 10px; border-radius: 5px; font-size: smaller;}
+      .country a:hover {background-color: mediumblue; transition: 0.25s linear;}
+      .country a:not([href]) {background-color: darkgray; color: gray}
+      .country a i {margin-right: 5px;}
+
+      .loading-cover {height: 100%; display: flex; justify-content: center; align-items: center;}
+      .hidden, [v-cloak] {display: none}
+
+      {% include worldmap.css %}
+    </style>
+    {% if site.safe == true %}
+    <script src="/js/vue.min.js" type="text/javascript"></script>
+    <link href="/css/all.min.css" rel="stylesheet">
+    {% else %}
+    <script src="/js/vue.js" type="text/javascript"></script>
+    <link href="/css/all.css" rel="stylesheet">
+    {% endif %}
+  </head>
+  <body>
+    <div id="loading" class="loading-cover">
+      Loading... This may take up to 30 seconds.
+    </div>
+    <div id="vue-app" v-cloak>
+      <section id="header">
+        <h2>Global Survey Response Dashboard</h2>
+      </section>
+      <section id="countries">
+        <p><span class="listcount" x-target="countries"></span> since ${filterDate.toLocaleDateString()}</p>
+        <ul>
+          <li v-for="responsibleOrganization in responsibleOrganizations">
+            <div class="responsible-organization" v-bind:class="('list-' + responsibleOrganization)">
+              <h3>
+                ${responsibleOrganization}
+                - <span class="listcount" v-bind:x-target="('list-' + responsibleOrganization)"></span>
+              </h3>
+              <ul v-bind:id="('list-' + responsibleOrganization)">
+                <li v-for="wbRegion in wbRegions">
+                  <h4>
+                    ${wbRegion.wbRegion} (${wbRegion.wbRegionCode}) 
+                    - <span class="listcount" v-bind:x-target="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)"></span>
+                  </h4>
+                  <ul class="countries" v-bind:id="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)">
+                    <li v-for="country in filterCountries(countries, responsibleOrganization, wbRegion.wbRegionCode)" class="country" v-bind:class="country.fields.responsibleOrganization">
+                      <input v-bind:id="('hasresponse-' + country.fields.iso3166Alpha2Code)" type="checkbox" v-bind:checked="hasResponse(country, filterDate)" disabled />
+                      <label v-bind:for="('hasresponse-' + country.fields.iso3166Alpha2Code)">
+                        <div>
+                          <p><i v-if="hasResponse(country, filterDate)" class="fas fa-check"></i><i v-else class="fas fa-times"></i> ${country.fields.countryName}<p>
+                          <a v-bind:href="country | retakeLastResponseUrl" target="_blank"><i class="fas fa-redo"></i>Retake last response</a>
+                          <a v-bind:href="country | newResponseUrl" target="_blank"><i class="fas fa-plus"></i>Start new response</a>
+                        </div>
+                      </label>
+                    </li>          
+                  </ul>                 
+                </li>
+              </ul>              
+            </div>
+          </li>
+        </ul>  
+      </section>
+      <section id="map">
+        <div>
+          {% include worldmap.svg %}
+        </div>  
+      </section>
+
+    </div>
+  
+    <script>
+      // this sorts the array of countries by responsibleOrganization, then wbRegionCode, then countryName
+      function sortCountries(country1, country2) {
+        return country1.fields.countryName.localeCompare(country2.fields.countryName)
+      }
+
+      function getResponsibleOrganizations (countries) {
+        const responsibleOrganizations = new Set();
+        for (country of countries) {
+          if (country.fields.responsibleOrganization) {
+            responsibleOrganizations.add(country.fields.responsibleOrganization);
+          } else {
+            responsibleOrganizations.add('unassigned');
+          }
+        }
+        return Array.from(responsibleOrganizations).sort();
+      }
+
+      function getWorldBankRegions (countries) {
+        const worldBankRegions = new Map();
+        for (country of countries) {
+          worldBankRegions.set(country.fields.wbRegionCode, {wbRegionCode: country.fields.wbRegionCode, wbRegion: country.fields.wbRegion})
+        }
+        return Array.from(worldBankRegions.values()).sort((region1, region2) => {
+          return region1.wbRegion.localeCompare(region2.wbRegion);
+        });
+      }
+
+      function renderData(countries) {
+        countries.sort(sortCountries);
+        const data = {
+          countries: countries,
+          responsibleOrganizations: getResponsibleOrganizations(countries),
+          wbRegions: getWorldBankRegions(countries),
+          filterDate: new Date(Date.parse("2021-01-26T00:00-0500"))
+        }         
+
+        vm = new Vue({
+          el: '#vue-app',
+          data: data,
+          delimiters: ['${','}'],  // need to use these because jekyll competes for {{ and }}
+          methods: {
+            hasResponse: function(country, date) {
+              if (country.fields.responseDates) {
+                for (responseDate of country.fields.responseDates) {
+                  if (Date.parse(responseDate) > date) {
+                    return true
+                  }
+                }
+              }
+              return false
+            },
+            filterCountries(countries, responsibleOrganization, wbRegionCode) {
+              return countries.filter((country) => {
+                return (((country.fields.responsibleOrganization || 'unassigned') === responsibleOrganization) && (country.fields.wbRegionCode === wbRegionCode))
+              });
+            }
+          },
+          mounted() {
+            document.getElementById('loading').classList.add('hidden');
+            [...document.getElementsByClassName('listcount')].forEach((item) => {
+              const myTarget = document.getElementById(item.attributes['x-target'].value);
+              if (myTarget) {
+                const totalCount = myTarget.querySelectorAll('li input[type="checkbox"]').length;
+                const checkedCount = myTarget.querySelectorAll('li input[type="checkbox"]:checked').length;
+                if (totalCount + checkedCount > 0) {
+                  item.innerHTML = checkedCount + ' of ' + totalCount + ' (' + Math.round(checkedCount/totalCount*100) + '%) countries completed';
+                }
+              }
+            })
+          },
+          filters: {
+            newResponseUrl: function(value) {
+              return `https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR?Q_PopulateResponse={"QID30":"${value.fields.qualtricsId}"}`
+            },
+            retakeLastResponseUrl: function(value) {
+              if (value.fields.responseQualtricsIds) {
+                const lastQualtricsIdResponseIndex = value.fields.responseQualtricsIds.length - 1;
+                const lastQualtricsResponseId = value.fields.responseQualtricsIds[lastQualtricsIdResponseIndex];
+                return `https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR?Q_R=${lastQualtricsResponseId}`
+              } else {
+                return null;
+              }
+            }
+          }
+        });
+      }
+
+
+      {% if site.safe == true %}
+      const dataSource = 'https://evening-retreat-17703.herokuapps.com/countries';
+      {% else %}
+      const dataSource = 'http://localhost:3000/countries';
+      {% endif %}
+      // load the json data file and once it's ready, render it;
+      // errors thrown during any step of this process will be handled by the .catch
+      fetch(dataSource)
+        .then(response => response.json())
+        .then(data => {
+          renderData(data);
+        })
+        .catch(error => document.getElementById(`loading`).innerText = "Error loading the data. We apologize for the inconvenience; please try again later.");
+    </script>
+  </body>
+</html>
