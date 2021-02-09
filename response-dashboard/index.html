@@ -22,8 +22,8 @@
       .country input[type="checkbox"]:checked ~ label div {background-color:lightgreen;}
 
       .country div p {font-size: large;}
-      .country a {background-color: midnightblue; color: white; padding: 10px; border-radius: 5px; font-size: smaller;}
-      .country a:hover {background-color: mediumblue; transition: 0.25s linear;}
+      a {background-color: midnightblue; color: white; padding: 10px; border-radius: 5px; font-size: smaller;}
+      a:hover {background-color: mediumblue; transition: 0.25s linear;}
       .country a:not([href]) {background-color: darkgray; color: gray}
       .country a i {margin-right: 5px;}
 
@@ -49,7 +49,7 @@
         <h2>Global Survey Response Dashboard</h2>
       </section>
       <section id="countries">
-        <p><span class="listcount" x-target="countries"></span> since ${filterDate.toLocaleDateString()}</p>
+        <p><span class="listcount" x-target="countries"></span> since <i onClick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() - 864E5)" class="fas fa-minus-circle"></i> ${filterDate.toLocaleDateString()} <i onClick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() + 864E5)" class="fas fa-plus-circle"></i></p>
         <ul>
           <li v-for="responsibleOrganization in responsibleOrganizations">
             <div class="responsible-organization" v-bind:class="('list-' + responsibleOrganization)">
@@ -64,7 +64,7 @@
                     - <span class="listcount" v-bind:x-target="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)"></span>
                   </h4>
                   <ul class="countries" v-bind:id="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)">
-                    <li v-for="country in filterCountries(countries, responsibleOrganization, wbRegion.wbRegionCode)" class="country" v-bind:class="country.fields.responsibleOrganization">
+                    <li v-for="country in filterCountries(countries, responsibleOrganization, wbRegion.wbRegionCode)" class="country">
                       <input v-bind:id="('hasresponse-' + country.fields.iso3166Alpha2Code)" type="checkbox" v-bind:checked="hasResponse(country, filterDate)" disabled />
                       <label v-bind:for="('hasresponse-' + country.fields.iso3166Alpha2Code)">
                         <div>
@@ -81,7 +81,7 @@
           </li>
         </ul>  
       </section>
-      <section id="map">
+      <section id="map" class="hidden">
         <div>
           {% include worldmap.svg %}
         </div>  
@@ -117,13 +117,26 @@
         });
       }
 
+      function updateListCounts() {
+        [...document.getElementsByClassName('listcount')].forEach((item) => {
+          const myTarget = document.getElementById(item.attributes['x-target'].value);
+          if (myTarget) {
+            const totalCount = myTarget.querySelectorAll('li input[type="checkbox"]').length;
+            const checkedCount = myTarget.querySelectorAll('li input[type="checkbox"]:checked').length;
+            if (totalCount + checkedCount > 0) {
+              item.innerHTML = Math.round(checkedCount/totalCount*100) + '% (' + checkedCount + ' of ' + totalCount + ' countries) completed';
+            }
+          }
+        })
+      }
+
       function renderData(countries) {
         countries.sort(sortCountries);
         const data = {
           countries: countries,
           responsibleOrganizations: getResponsibleOrganizations(countries),
           wbRegions: getWorldBankRegions(countries),
-          filterDate: new Date(Date.parse("2021-01-26T00:00-0500"))
+          filterDate: new Date(Date.parse("2021-01-25T00:00-0500"))
         }         
 
         vm = new Vue({
@@ -149,15 +162,11 @@
           },
           mounted() {
             document.getElementById('loading').classList.add('hidden');
-            [...document.getElementsByClassName('listcount')].forEach((item) => {
-              const myTarget = document.getElementById(item.attributes['x-target'].value);
-              if (myTarget) {
-                const totalCount = myTarget.querySelectorAll('li input[type="checkbox"]').length;
-                const checkedCount = myTarget.querySelectorAll('li input[type="checkbox"]:checked').length;
-                if (totalCount + checkedCount > 0) {
-                  item.innerHTML = checkedCount + ' of ' + totalCount + ' (' + Math.round(checkedCount/totalCount*100) + '%) countries completed';
-                }
-              }
+            updateListCounts();
+          },
+          updated: function () {
+            this.$nextTick(function () {
+              updateListCounts();
             })
           },
           filters: {
