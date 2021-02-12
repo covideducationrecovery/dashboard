@@ -4,42 +4,70 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <meta name="robots" content="noindex">
     <title>Global Survey Response Dashboard</title>
     <style>
-      html, body
-      body {background: white; margin: auto; font-family: sans-serif;}
+      * {margin: 0; padding: 0;}
+      html, body {border-collapse:collapse;}
+      body {background: white; font-family: sans-serif;}
       a {text-decoration: none;}
       input[type="checkbox"] {display: none;}
       ul {list-style: none; padding-left: 0;}
+      .sticky {position: sticky; top: 0; z-index: 100;}
 
-      #header {top: 0; position: sticky; background-color: white; border-bottom: 1px solid black;}
+      #header {top: 0; position: sticky; border-bottom: 1px solid black; box-shadow: 0px 0.1rem 0.5rem grey}
+      #header div {background-color: white; display: flex; flex-flow: row wrap; justify-content: space-between; align-items: baseline; padding: 0.25rem;}
+      #header div div {display: flex; flex-flow: column nowrap;}
 
-      .responsible-organization {padding: 10px; margin: 10px; border: 5px solid}
-      .list-JHU {border-color: purple }
-      .list-UNICEF {border-color: lightblue}
-      .list-WB {border-color: blue}
+      #header div.banner-alert {background-color: #fff3cf; color: #856404; display: flex; flex-flow: row nowrap;}
+      #header div.banner-alert button {background-color: #FFC107; border-color: #FFC107; color: #212529; text-align: center; border: 1px solid transparent; }
+      #header div.hidden {display:none;}
+
       .countries {display: flex; flex-flow: row wrap;}
-      .country {background-color: grey; margin: 3px;}
-      .country input[type="checkbox"] ~ label div {display: block; background-color: lightgrey; padding: 10px;}
-      .country input[type="checkbox"]:checked ~ label div {background-color:lightgreen;}
+      .responsible-organization {border: 0.25rem solid; margin: 1rem;}
+      .responsible-organization h3 {padding: 0.5rem; top: 60px; position: sticky; z-index: 99;}
+      .list-JHU {border-color: #A15A95;}
+      .list-JHU h3, .list-JHU h4 {background-color: #A15A95; color: white;}
+      .list-UNICEF {border-color: #1cabe2}
+      .list-UNICEF h3, .list-UNICEF h4 {background-color: #1cabe2; color: white;}
+      .list-WB {border-color: #002244}
+      .list-WB h3, .list-WB h4 {background-color: #002244; color: white;}
+      .list-unassigned {border-color: #E6E6E6;}
+      .list-unassigned h3, .list-unassigned h4 {background-color: #E6E6E6; color: black;}
+      .region h4 {padding: 0.6rem; opacity: 0.75;}
 
-      .country div p {font-size: large;}
-      a {background-color: midnightblue; color: white; padding: 10px; border-radius: 5px; font-size: smaller;}
-      a:hover {background-color: mediumblue; transition: 0.25s linear;}
+      .country {margin: 0.5rem; width: 30ch;}
+      .country input[type="checkbox"] ~ label div {display: block; background-color: lightgrey; padding: 0.2rem;}
+      .country input[type="checkbox"]:checked ~ label div {background-color: #719949;}
+
+      .country div p {font-size: large; margin-top: 0.3rem;}
+      .country div p.smaller {font-size: smaller; margin-top: 0.3rem}
+      .country a {background-color: #002D72; color: white; display: block; padding: 0.75rem; margin: 0.25rem; border-radius: 5px; font-size: smaller; transition: 0.25s linear;}
+      .country a:hover {background-color: #68ACE5; transition: 0.25s linear;}
       .country a:not([href]) {background-color: darkgray; color: gray}
-      .country a i {margin-right: 5px;}
+      .country a i {padding-right: 5px;}
 
-      .loading-cover {height: 100%; display: flex; justify-content: center; align-items: center;}
-      .hidden, [v-cloak] {display: none;}
+      .loading-cover {height: 100vh; display: flex; flex-flow: column nowrap; justify-content: center; align-items: center;}
+      .loading-cover div {padding: 2rem;}
+      .loading-spinner {animation: infinite-rotate 2s linear infinite;}
+
       .text-center {text-align: center;}
 
       {% include worldmap.css %}
+      #svg-worldmap {max-width: 1024px; margin: auto; fill: lightgrey;}
+      .has-response {fill: #719949;}
 
 
-      .has-response {fill: lightgreen;}
-      section#header div {margin: auto;}
-      #svg-worldmap {max-width: 1024px; margin: auto;}
+      .hidden, [v-cloak] {display: none;}
+
+      .listcount:before {content: '- '}
+      .listcount:empty:before {content: ''}
+
+      @keyframes infinite-rotate {
+        from { transform: rotate(0deg) }
+        to { transform: rotate(360deg) }
+      }
+
     </style>
     {% if site.safe == true %}
     <script src="/js/vue.min.js" type="text/javascript"></script>
@@ -51,18 +79,39 @@
   </head>
   <body>
     <div id="loading" class="loading-cover">
-      Loading... This may take up to 30 seconds.
+      <div class="loading-spinner">
+        <i class="fas fa-spinner fa-3x loading-spinner"></i>
+      </div>
+      <div>
+        Loading... This may take up to 30 seconds.
+      </div>
     </div>
     <div id="vue-app" v-cloak>
-      <section id="header">
-        <h2>Global Survey Response Dashboard</h2>
-        <p>
-          <span class="listcount" x-target="countries"></span>
-          since 
-          <i onClick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() - 864E5)" class="fas fa-minus-circle"></i>
-          ${filterDate.toLocaleDateString()} 
-          <i onClick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() + 864E5)" class="fas fa-plus-circle"></i>
-        </p>
+      <section id="header" class="sticky">
+        <div>
+          <div>
+            <h2>Survey Response Dashboard</h2>
+            <p>
+              Global <span class="listcount" x-target="countries"></span>
+              since 
+              <i onClick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() - 864E5)" class="fas fa-minus-circle"></i>
+              ${filterDate.toLocaleDateString()} 
+              <i onClick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() + 864E5)" class="fas fa-plus-circle"></i>
+            </p>  
+          </div>
+          <div>
+            <p>
+              <a href="https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR?testing=true" target="_blank">Submit a practice survey response</a>
+            </p>
+            <p>
+              <a href="/assets/survey-current.pdf" target="_blank">View survey questions [pdf]</a>  
+            </p>
+          </div>
+        </div>
+        <div class="banner-alert" v-bind:class="{hidden: !cameFromQualtrics}">
+          <p>NOTE: If you have just submitted a survey response, it may take a few minutes to be reflected on this page.</p>
+          <button onclick="this.parentNode.classList.add('hidden')">Dismiss</button>
+        </div>  
       </section>
       <section id="map" class="text-center">
         <div>
@@ -75,22 +124,31 @@
             <div class="responsible-organization" v-bind:class="('list-' + responsibleOrganization)">
               <h3>
                 ${responsibleOrganization}
-                - <span class="listcount" v-bind:x-target="('list-' + responsibleOrganization)"></span>
+                <span class="listcount" v-bind:x-target="('list-' + responsibleOrganization)"></span>
               </h3>
               <ul v-bind:id="('list-' + responsibleOrganization)">
-                <li v-for="wbRegion in wbRegions">
+                <li v-for="wbRegion in wbRegions" class="region">
                   <h4>
                     ${wbRegion.wbRegion} (${wbRegion.wbRegionCode}) 
-                    - <span class="listcount" v-bind:x-target="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)"></span>
+                    <span class="listcount" v-bind:x-target="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)"></span>
                   </h4>
                   <ul class="countries" v-bind:id="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)">
                     <li v-for="country in filterCountries(countries, responsibleOrganization, wbRegion.wbRegionCode)" class="country">
                       <input v-bind:id="('country-' + country.fields.iso3166Alpha2Code)" type="checkbox" v-bind:checked="hasResponse(country, filterDate)" disabled />
                       <label v-bind:for="('country-' + country.fields.iso3166Alpha2Code)">
                         <div>
-                          <p><i v-if="hasResponse(country, filterDate)" class="fas fa-check"></i><i v-else class="fas fa-times"></i> ${country.fields.countryName}<p>
-                          <a v-bind:href="country | retakeLastResponseUrl" target="_blank"><i class="fas fa-redo"></i>Retake last response</a>
-                          <a v-bind:href="country | newResponseUrl" target="_blank"><i class="fas fa-plus"></i>Start new response</a>
+                          <div>
+                            <p>
+                              <i v-if="hasResponse(country, filterDate)" class="fas fa-check"></i>
+                              <i v-else class="fas fa-times"></i> 
+                              ${country.fields.countryName}
+                            </p>
+                            <p class="smaller">Last Response: ${country.fields.responseDates | lastResponseAge}</p>   
+                          </div>
+                          <div>
+                            <a v-bind:href="country | retakeLastResponseUrl" target="_blank"><i class="fas fa-redo"></i>Change last response</a>
+                            <a v-bind:href="country | newResponseUrl" target="_blank"><i class="fas fa-plus"></i>Start new response</a>  
+                          </div>
                         </div>
                       </label>
                     </li>          
@@ -124,7 +182,7 @@
       function getWorldBankRegions (countries) {
         const worldBankRegions = new Map();
         for (country of countries) {
-          worldBankRegions.set(country.fields.wbRegionCode, {wbRegionCode: country.fields.wbRegionCode, wbRegion: country.fields.wbRegion})
+          worldBankRegions.set(country.fields.wbRegion, {wbRegionCode: country.fields.wbRegionCode, wbRegion: country.fields.wbRegion})
         }
         return Array.from(worldBankRegions.values()).sort((region1, region2) => {
           return region1.wbRegion.localeCompare(region2.wbRegion);
@@ -170,11 +228,13 @@
 
       function renderData(countries) {
         countries.sort(sortCountries);
+        
         const data = {
           countries: countries,
           responsibleOrganizations: getResponsibleOrganizations(countries),
           wbRegions: getWorldBankRegions(countries),
-          filterDate: new Date(Date.parse("2021-01-25T00:00-0500"))
+          filterDate: new Date(Date.parse("2021-01-25T00:00-0500")),
+          cameFromQualtrics: document.referrer.toLowerCase().includes('qualtrics')
         }         
 
         vm = new Vue({
@@ -199,9 +259,9 @@
             }
           },
           mounted() {
-            document.getElementById('loading').classList.add('hidden');
             updateListCounts();
             updateMap();
+            document.getElementById('loading').classList.add('hidden');
           },
           updated: function () {
             this.$nextTick(function () {
@@ -221,7 +281,21 @@
               } else {
                 return null;
               }
+            },
+            lastResponseAge: function(value) {
+              if (value) {
+                lastDate = new Date(Array.from(value).pop())
+                currentDate = new Date();
+                difference = Math.floor((currentDate - lastDate) / 86400000);
+                if (difference === 1) {
+                  return '1 day ago'
+                } else {
+                  return `${difference} days ago`
+                }
+              }
+              return 'never'
             }
+            
           }
         });
       }
