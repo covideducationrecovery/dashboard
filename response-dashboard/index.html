@@ -15,9 +15,9 @@
       ul {list-style: none; padding-left: 0;}
       .sticky {position: sticky; top: 0; z-index: 100;}
 
-      #header {top: 0; position: sticky; border-bottom: 1px solid black; box-shadow: 0px 0.1rem 0.5rem grey}
+      #header {border-bottom: 1px solid black; box-shadow: 0px 0.1rem 0.5rem grey}
       #header div {background-color: white; display: flex; flex-flow: row wrap; justify-content: space-between; align-items: baseline; padding: 0.25rem;}
-      #header div div {display: flex; flex-flow: column nowrap;}
+      #header div div {display: flex; flex-flow: column nowrap; white-space:no-wrap; overflow:hidden;}
 
       #header div.banner-alert {background-color: #fff3cf; color: #856404; display: flex; flex-flow: row nowrap;}
       #header div.banner-alert button {background-color: #FFC107; border-color: #FFC107; color: #212529; text-align: center; border: 1px solid transparent; }
@@ -25,7 +25,7 @@
 
       .countries {display: flex; flex-flow: row wrap;}
       .responsible-organization {border: 0.5rem solid; margin: 1rem 1rem 2rem 1rem;}
-      .responsible-organization h3 {padding: 0.5rem; top: 60px; position: sticky; z-index: 99;}
+      .responsible-organization h3 {padding: 0.5rem; top: 0px; position: sticky; z-index: 99;}
       .list-JHU {border-color: #A15A95;}
       .list-JHU h3, .list-JHU h4 {background-color: #A15A95; color: white;}
       .list-UNICEF {border-color: #1cabe2}
@@ -36,9 +36,9 @@
       .list-unassigned h3, .list-unassigned h4 {background-color: #E6E6E6; color: black;}
       .region h4 {padding: 0.6rem; opacity: 0.75;}
 
-      .country {margin: 0.5rem; width: 30ch;}
-      .country input[type="checkbox"] ~ label div {display: block; background-color: lightgrey; padding: 0.2rem;}
-      .country input[type="checkbox"]:checked ~ label div {background-color: #719949;}
+      .country {margin: 0.5rem; width: 35ch;}
+      .country input[type="checkbox"] ~ label div {display: block; background-color: lightgrey; padding: 0.2rem; transition: 0.25s linear;}
+      .country input[type="checkbox"]:checked ~ label div {background-color: #719949; transition: 0.25s linear;}
 
       .country div p {font-size: large; margin-top: 0.3rem;}
       .country div p.smaller {font-size: smaller; margin-top: 0.3rem}
@@ -54,18 +54,23 @@
       .text-center {text-align: center;}
 
       {% include worldmap.css %}
-      #svg-worldmap {max-width: 1024px; margin: auto; fill: lightgrey;}
-      .has-response {fill: #719949;}
+      #svg-worldmap {max-width: 1024px; margin: auto; fill: lightgrey; transition: 0.25s linear;}
+      .has-response {fill: #719949; transition: 0.25s linear;}
 
 
       .hidden, [v-cloak] {display: none;}
 
-      .listcount:before {content: '- '}
-      .listcount:empty:before {content: ''}
+      [x-target]:before {content: '- '}
+      [x-target]:empty:before {content: ''}
 
       @keyframes infinite-rotate {
         from { transform: rotate(0deg) }
         to { transform: rotate(360deg) }
+      }
+
+      @media (min-width: 600px) and (min-height: 600px) {
+        #header {position: sticky; top: 0; z-index: 100}
+        .responsible-organization h3 {top: 60px;}
       }
 
     </style>
@@ -87,16 +92,17 @@
       </div>
     </div>
     <div id="vue-app" v-cloak>
-      <section id="header" class="sticky">
+      <section id="header">
         <div>
           <div>
             <h2>Survey Response Dashboard</h2>
             <p>
-              Global <span class="listcount" x-target="countries"></span>
-              since 
-              <i onClick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() - 864E5)" class="fas fa-minus-circle"></i>
-              ${filterDate.toLocaleDateString()} 
-              <i onClick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() + 864E5)" class="fas fa-plus-circle"></i>
+              <select onchange="vm.$data.currentSurveyRoundIndex = this.selectedIndex">
+                <option v-for="(surveyRound, index) in surveyRounds" v-bind:selected="(index === currentSurveyRoundIndex)">
+                  ${new Date(surveyRound.startDate).toLocaleDateString()} - ${new Date(surveyRound.endDate).toLocaleDateString()}
+                </option>
+              </select>
+              Global <span x-target="countries"></span>
             </p>  
           </div>
           <div>
@@ -124,30 +130,40 @@
             <div class="responsible-organization" v-bind:class="('list-' + responsibleOrganization)">
               <h3>
                 ${responsibleOrganization}
-                <span class="listcount" v-bind:x-target="('list-' + responsibleOrganization)"></span>
+                <span v-bind:x-target="('list-' + responsibleOrganization)"></span>
               </h3>
               <ul v-bind:id="('list-' + responsibleOrganization)">
                 <li v-for="wbRegion in wbRegions" class="region">
                   <h4>
                     ${wbRegion.wbRegion} (${wbRegion.wbRegionCode}) 
-                    <span class="listcount" v-bind:x-target="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)"></span>
+                    <span v-bind:x-target="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)"></span>
                   </h4>
                   <ul class="countries" v-bind:id="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)">
                     <li v-for="country in filterCountries(countries, responsibleOrganization, wbRegion.wbRegionCode)" class="country">
-                      <input v-bind:id="('country-' + country.fields.iso3166Alpha2Code)" type="checkbox" v-bind:checked="hasResponse(country, filterDate)" disabled />
+                      <input v-bind:id="('country-' + country.fields.iso3166Alpha2Code)" type="checkbox" v-bind:checked="country.hasCurrentRoundResponse" disabled />
                       <label v-bind:for="('country-' + country.fields.iso3166Alpha2Code)">
                         <div>
                           <div>
                             <p>
-                              <i v-if="hasResponse(country, filterDate)" class="fas fa-check"></i>
+                              <i v-if="country.hasCurrentRoundResponse" class="fas fa-check"></i>
                               <i v-else class="fas fa-times"></i> 
                               ${country.fields.countryName}
                             </p>
-                            <p class="smaller">Last Response: ${country.fields.responseDates | lastResponseAge}</p>   
+                            <p v-if="country.hasCurrentRoundResponse" class="smaller">
+                              Response received ${new Date(country.fields.responseDates[country.currentRoundResponseIndex]).toLocaleDateString()}
+                            </p>
+                            <p v-else class="smaller">
+                              No response for this round
+                            </p>
+
                           </div>
-                          <div>
-                            <a v-bind:href="country | retakeLastResponseUrl" target="_blank"><i class="fas fa-redo"></i>Change last response</a>
-                            <a v-bind:href="country | newResponseUrl" target="_blank"><i class="fas fa-plus"></i>Start new response</a>  
+                          <div v-if="country.hasCurrentRoundResponse">
+                            <a v-bind:href="country | previewResponseUrl" target="_blank"><i class="fas fa-file"></i>View this response</a>
+                            <a v-bind:href="country | retakeCurrentResponseUrl" target="_blank"><i class="fas fa-undo"></i>Change this response</a>
+                          </div>
+                          <div v-else>
+                            <a v-bind:href="country | newResponseWithMostRecentAnswersUrl" target="_blank"><i class="fas fa-play"></i>New response with previous answers</a>
+                            <a v-bind:href="country | newResponseBlankUrl" target="_blank"><i class="fas fa-plus"></i>New blank response</a>  
                           </div>
                         </div>
                       </label>
@@ -162,12 +178,9 @@
     </div>
   
     <script>
-      // this sorts the array of countries by responsibleOrganization, then wbRegionCode, then countryName
-      function sortCountries(country1, country2) {
-        return country1.fields.countryName.localeCompare(country2.fields.countryName)
-      }
 
-      function getResponsibleOrganizations (countries) {
+      // equivalent of SELECT DISTINCT responsibleOrganization FROM countries SORT BY responsibleOrganization ASC
+      const getResponsibleOrganizations = (countries) => {
         const responsibleOrganizations = new Set();
         for (country of countries) {
           if (country.fields.responsibleOrganization) {
@@ -179,7 +192,7 @@
         return Array.from(responsibleOrganizations).sort();
       }
 
-      function getWorldBankRegions (countries) {
+      const getWorldBankRegions = (countries) => {
         const worldBankRegions = new Map();
         for (country of countries) {
           worldBankRegions.set(country.fields.wbRegion, {wbRegionCode: country.fields.wbRegionCode, wbRegion: country.fields.wbRegion})
@@ -189,60 +202,122 @@
         });
       }
 
-      function updateListCounts() {
-        [...document.getElementsByClassName('listcount')].forEach((item) => {
-          const myTarget = document.getElementById(item.attributes['x-target'].value);
-          if (myTarget) {
-            const totalCount = myTarget.querySelectorAll('li input[type="checkbox"]').length;
-            const checkedCount = myTarget.querySelectorAll('li input[type="checkbox"]:checked').length;
+      // the counts on this page are hacky, not driven by data but instead by UI elements, though this does
+      // allow for different country groupings if desired. Elements expected to contain a count have an x-target
+      // attribute set to the ID of the element which has the checkboxes to be counted. If no checkboxes are found,
+      // nothing will be displayed. This function updates _all_ elements with the x-target attribute.
+      const updateListCounts = () => {
+        [...document.querySelectorAll('[x-target]')].forEach((node) => {
+          const xTarget = document.getElementById(node.attributes['x-target'].value);
+          if (xTarget) {
+            const totalCount = xTarget.querySelectorAll('li input[type="checkbox"]').length;
+            const checkedCount = xTarget.querySelectorAll('li input[type="checkbox"]:checked').length;
             if (totalCount + checkedCount > 0) {
-              item.innerHTML = Math.round(checkedCount/totalCount*100) + '% (' + checkedCount + ' of ' + totalCount + ' countries) completed';
+              node.innerHTML = Math.round(checkedCount/totalCount*100) + '% (' + checkedCount + ' of ' + totalCount + ') complete';
             }
           }
         })
       }
 
-      function updateMap() {
+      // the map update is hacky, not driven by data but instead by UI elements
+      const updateMap = () => {
         const worldMap = document.getElementById('svg-worldmap');
 
-        //clear the class attributes from the map
-        [...worldMap.getElementsByClassName('has-response')].forEach((item) => {
-          item.classList.remove('has-response');
-        })
-
-        //set the attributes based upon the checked items
         if (worldMap) {
-          [...document.querySelectorAll('.countries li input[type="checkbox"]')].forEach((item) => {
+          //remove the existing 'has-response' class attributes from the map
+          [...worldMap.getElementsByClassName('has-response')].forEach((item) => {
+            item.classList.remove('has-response');
+          });
+
+          //set the 'has-response' class based upon the checked items from the document
+          [...document.querySelectorAll('#countries input[type="checkbox"]:checked')].forEach((item) => {
             const iso3166Alpha2Code = item.id.split("-").pop().toLowerCase();
             if (iso3166Alpha2Code) {
-              if (item.checked) {
-                svgGroup = worldMap.getElementById(iso3166Alpha2Code)
-                if (svgGroup) {
-                  svgGroup.classList.add('has-response');
-                }
+              svgGroup = worldMap.getElementById(iso3166Alpha2Code)
+              if (svgGroup) {
+                svgGroup.classList.add('has-response');
               }
             }
           })
         }
       }
 
-      function renderData(countries) {
-        countries.sort(sortCountries);
-        
-        const data = {
-          countries: countries,
-          responsibleOrganizations: getResponsibleOrganizations(countries),
-          wbRegions: getWorldBankRegions(countries),
-          filterDate: new Date(Date.parse("2021-01-25T00:00-0500")),
-          cameFromQualtrics: document.referrer.toLowerCase().includes('qualtrics')
-        }         
+      // returns the index of the round with the current date; if there isn't one, return the last one in the list
+      const getCurrentRoundIndex = (surveyRounds) => {
+        const now = Date.now();
+        for (const [index, surveyRound] of surveyRounds.entries()) {
+          if ((now => surveyRound.startDate) && (now < surveyRound.endDate)) {
+            return index
+          }
+        }
+        return surveyRounds.length - 1
+      }
+
+      // sets up additional data values to support simpler & faster rendering
+      const updateCountriesInRound = (countries, surveyRoundIndex, surveyRounds) => {
+        const surveyRound = surveyRounds[surveyRoundIndex];
+        for (country of countries) {
+          country.currentRoundResponseIndex = null;
+          country.hasCurrentRoundResponse = false;
+          if (country.fields.responseDates) {
+            country.fields.responseDates.forEach((responseDate, index) => {
+              if (responseDate >= surveyRound.startDate && responseDate < surveyRound.endDate) {
+                country.currentRoundResponseIndex = index;
+                country.hasCurrentRoundResponse = true;
+              }
+            })
+          }
+        }
+      }
+
+      // replaces all the date values in country.responseDates with the numeric equivalent
+      const convertCountryResponseDates = (countries) => {
+        for (country of countries) {
+          if (country.fields.responseDates) {
+            country.fields.responseDates.forEach((responseDate, i, responseDates) => {
+              responseDates[i] = (new Date(responseDate).getTime());
+            });
+          }
+        }
+      }
+
+      // this function optimizes the data sent from the API for faster rendering in-browser
+      const prepareData = (fetchResponse) => {
+        const countries = fetchResponse;
+        const vueData = {};
+
+        // sort the country list by country name ascending
+        vueData.countries = countries.sort((country1, country2) => {
+          return country1.fields.countryName.localeCompare(country2.fields.countryName)
+        });
+
+        // convert the dates in the country list to epoch milliseconds
+        convertCountryResponseDates(vueData.countries);
+
+        vueData.wbRegions = getWorldBankRegions(vueData.countries)
+        vueData.responsibleOrganizations = getResponsibleOrganizations(vueData.countries);
+        vueData.cameFromQualtrics = document.referrer.toLowerCase().includes('qualtrics');
+        vueData.surveyRounds = [
+          {startDate: new Date('2021-01-24').getTime(), endDate: new Date('2021-02-16').getTime() + 86399999, roundId: 1},
+          {startDate: new Date('2021-02-17').getTime(), endDate: new Date('2021-03-06').getTime() + 86399999, roundId: 2}
+        ]
+        vueData.currentSurveyRoundIndex = getCurrentRoundIndex(vueData.surveyRounds);
+        // vueData.currentSurveyRoundIndex = 0
+        console.log(`${vueData.currentSurveyRoundIndex} ${JSON.stringify(vueData.surveyRounds[vueData.currentSurveyRoundIndex])}`);
+        updateCountriesInRound(vueData.countries, vueData.currentSurveyRoundIndex, vueData.surveyRounds);
+
+        return vueData
+      }
+
+      const renderData = (countries) => {
+        const data = prepareData(countries);    
 
         vm = new Vue({
           el: '#vue-app',
           data: data,
           delimiters: ['${','}'],  // need to use these because jekyll competes for {{ and }}
           methods: {
-            hasResponse: function(country, date) {
+            hasResponse: (country, date) => {
               if (country.fields.responseDates) {
                 for (responseDate of country.fields.responseDates) {
                   if (Date.parse(responseDate) > date) {
@@ -252,37 +327,57 @@
               }
               return false
             },
-            filterCountries(countries, responsibleOrganization, wbRegionCode) {
+            filterCountries: (countries, responsibleOrganization, wbRegionCode) => {
               return countries.filter((country) => {
                 return (((country.fields.responsibleOrganization || 'unassigned') === responsibleOrganization) && (country.fields.wbRegionCode === wbRegionCode))
               });
             }
           },
-          mounted() {
+          mounted: () => {
             updateListCounts();
             updateMap();
             document.getElementById('loading').classList.add('hidden');
           },
-          updated: function () {
-            this.$nextTick(function () {
+          beforeUpdate: () => {
+            updateCountriesInRound(vm.$data.countries, vm.$data.currentSurveyRoundIndex, vm.$data.surveyRounds);
+          },
+          updated: () => {
+            // these methods require the UX to be rendered, so do it after nextTick();
+            vm.$nextTick(() => {
               updateListCounts();
               updateMap();
             })
           },
           filters: {
-            newResponseUrl: function(value) {
-              return `https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR?Q_PopulateResponse={"QID30":"${value.fields.qualtricsId}"}`
+            previewResponseUrl: (country) => {
+              if (country.fields.responseLinks && country.hasCurrentRoundResponse) {
+                const responseLink = country.fields.responseLinks[country.currentRoundResponseIndex];
+                if (responseLink && responseLink != '#') {
+                  return responseLink
+                }
+              }
+              return null;
             },
-            retakeLastResponseUrl: function(value) {
-              if (value.fields.responseQualtricsIds) {
-                const lastQualtricsIdResponseIndex = value.fields.responseQualtricsIds.length - 1;
-                const lastQualtricsResponseId = value.fields.responseQualtricsIds[lastQualtricsIdResponseIndex];
-                return `https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR?Q_R=${lastQualtricsResponseId}`
+            retakeCurrentResponseUrl: (country) => {
+              if (country.fields.responseQualtricsIds && country.hasCurrentRoundResponse) {
+                const qualtricsResponseId = country.fields.responseQualtricsIds[country.currentRoundResponseIndex];
+                return `https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR?Q_R=${qualtricsResponseId}&Q_R_DEL=1`
               } else {
                 return null;
               }
             },
-            lastResponseAge: function(value) {
+            newResponseWithMostRecentAnswersUrl: (country) => {
+              if (country.fields.responseQualtricsIds) {
+                const mostRecentQualtricsResponseId = [...country.fields.responseQualtricsIds].pop();
+                return `https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR?Q_R=${mostRecentQualtricsResponseId}`
+              } else {
+                return null;
+              }
+            },
+            newResponseBlankUrl: (country) => {
+              return `https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR?Q_PopulateResponse={"QID30":"${country.fields.qualtricsId}"}`
+            },
+            lastResponseAge: (value) => {
               if (value) {
                 lastDate = new Date(Array.from(value).pop())
                 currentDate = new Date();
@@ -313,7 +408,12 @@
         .then(data => {
           renderData(data);
         })
-        .catch(error => document.getElementById(`loading`).innerText = "Error loading the data. We apologize for the inconvenience; please try again later.");
+      {% if site.safe == true %}
+        .catch(error => {
+          document.getElementById(`loading`).innerText = "Error loading the data. We apologize for the inconvenience; please try again later.";
+          console.error(error)
+        });
+      {% endif %}
     </script>
   </body>
 </html>
