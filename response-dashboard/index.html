@@ -99,7 +99,7 @@
             <p>
               <select onchange="vm.$data.currentSurveyRoundIndex = this.selectedIndex">
                 <option v-for="(surveyRound, index) in surveyRounds" v-bind:selected="(index === currentSurveyRoundIndex)">
-                  ${new Date(surveyRound.startDate).toLocaleDateString()} - ${new Date(surveyRound.endDate).toLocaleDateString()}
+                  ${surveyRound.startDate | renderUTCDate} to ${surveyRound.endDate | renderUTCDate}
                 </option>
               </select>
               Global <span x-target="countries"></span>
@@ -107,10 +107,10 @@
           </div>
           <div>
             <p>
-              <a href="https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR?testing=true" target="_blank">Submit a practice survey response</a>
+              <a href="/assets/survey-current.pdf" target="_blank">View survey questions [pdf]</a>  
             </p>
             <p>
-              <a href="/assets/survey-current.pdf" target="_blank">View survey questions [pdf]</a>  
+              To submit a response, scroll down to find the country.
             </p>
           </div>
         </div>
@@ -130,7 +130,6 @@
             <div class="responsible-organization" v-bind:class="('list-' + responsibleOrganization)">
               <h3>
                 ${responsibleOrganization}
-                <span v-bind:x-target="('list-' + responsibleOrganization)"></span>
               </h3>
               <ul v-bind:id="('list-' + responsibleOrganization)">
                 <li v-for="wbRegion in wbRegions" class="region">
@@ -175,11 +174,20 @@
           </li>
         </ul>  
       </section>
+      <section id="footer">
+        <div class="text-center">
+          Version 1.2 - 
+          <a v-bind:href="null | newResponseBlankPracticeUrl" target="_blank">Submit a practice survey response</a>
+          <br /><br />
+        </div>
+      </section>
     </div>
   
     <script>
 
-      // equivalent of SELECT DISTINCT responsibleOrganization FROM countries SORT BY responsibleOrganization ASC
+      var surveyBaseUrl = "https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR"
+
+      // extracts the unique list of organizations from countries data, and sets up an unassigned group for blank values
       const getResponsibleOrganizations = (countries) => {
         const responsibleOrganizations = new Set();
         for (country of countries) {
@@ -192,6 +200,7 @@
         return Array.from(responsibleOrganizations).sort();
       }
 
+      // extracts the unique list of world bank regions from the countries data.
       const getWorldBankRegions = (countries) => {
         const worldBankRegions = new Map();
         for (country of countries) {
@@ -275,7 +284,7 @@
         for (country of countries) {
           if (country.fields.responseDates) {
             country.fields.responseDates.forEach((responseDate, i, responseDates) => {
-              responseDates[i] = (new Date(responseDate).getTime());
+              responseDates[i] = (Date.parse(responseDate));
             });
           }
         }
@@ -294,21 +303,32 @@
         // convert the dates in the country list to epoch milliseconds
         convertCountryResponseDates(vueData.countries);
 
+        // create a list of unique world bank regions
         vueData.wbRegions = getWorldBankRegions(vueData.countries)
+
+        // create a list of unique organizations
         vueData.responsibleOrganizations = getResponsibleOrganizations(vueData.countries);
+
+        // flag to display a note if the page visited before this one was qualtrics
         vueData.cameFromQualtrics = document.referrer.toLowerCase().includes('qualtrics');
+
+        // TODO: move this to API / data source
         vueData.surveyRounds = [
-          {startDate: new Date('2021-01-24').getTime(), endDate: new Date('2021-02-16').getTime() + 86399999, roundId: 1},
-          {startDate: new Date('2021-02-17').getTime(), endDate: new Date('2021-03-06').getTime() + 86399999, roundId: 2}
+          {startDate: Date.parse('2021-01-24T00:00:00.000Z'), endDate: Date.parse('2021-02-16T23:59:59.999Z'), roundId: 1},
+          {startDate: Date.parse('2021-02-17T00:00:00.000Z'), endDate: Date.parse('2021-03-06T23:59:59.999Z'), roundId: 2}
         ]
+
+        // select the survey round to display based upon the current date
         vueData.currentSurveyRoundIndex = getCurrentRoundIndex(vueData.surveyRounds);
-        // vueData.currentSurveyRoundIndex = 0
-        console.log(`${vueData.currentSurveyRoundIndex} ${JSON.stringify(vueData.surveyRounds[vueData.currentSurveyRoundIndex])}`);
+
+        // set display flags and reference indexes within the country data, based upon survey round
+        //   this function is also called each time the dropdown is changed
         updateCountriesInRound(vueData.countries, vueData.currentSurveyRoundIndex, vueData.surveyRounds);
 
         return vueData
       }
 
+      // primary function for the page. Once fetch loads the data, it calls this function to do the rest.
       const renderData = (countries) => {
         const data = prepareData(countries);    
 
@@ -317,16 +337,6 @@
           data: data,
           delimiters: ['${','}'],  // need to use these because jekyll competes for {{ and }}
           methods: {
-            hasResponse: (country, date) => {
-              if (country.fields.responseDates) {
-                for (responseDate of country.fields.responseDates) {
-                  if (Date.parse(responseDate) > date) {
-                    return true
-                  }
-                }
-              }
-              return false
-            },
             filterCountries: (countries, responsibleOrganization, wbRegionCode) => {
               return countries.filter((country) => {
                 return (((country.fields.responsibleOrganization || 'unassigned') === responsibleOrganization) && (country.fields.wbRegionCode === wbRegionCode))
@@ -361,7 +371,7 @@
             retakeCurrentResponseUrl: (country) => {
               if (country.fields.responseQualtricsIds && country.hasCurrentRoundResponse) {
                 const qualtricsResponseId = country.fields.responseQualtricsIds[country.currentRoundResponseIndex];
-                return `https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR?Q_R=${qualtricsResponseId}&Q_R_DEL=1`
+                return `${surveyBaseUrl}?Q_R=${qualtricsResponseId}&Q_R_DEL=1`
               } else {
                 return null;
               }
@@ -369,13 +379,16 @@
             newResponseWithMostRecentAnswersUrl: (country) => {
               if (country.fields.responseQualtricsIds) {
                 const mostRecentQualtricsResponseId = [...country.fields.responseQualtricsIds].pop();
-                return `https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR?Q_R=${mostRecentQualtricsResponseId}`
+                return `${surveyBaseUrl}?Q_R=${mostRecentQualtricsResponseId}`
               } else {
                 return null;
               }
             },
             newResponseBlankUrl: (country) => {
-              return `https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR?Q_PopulateResponse={"QID30":"${country.fields.qualtricsId}"}`
+              return `${surveyBaseUrl}?Q_PopulateResponse={"QID30":"${country.fields.qualtricsId}"}`
+            },
+            newResponseBlankPracticeUrl: () => {
+              return `${surveyBaseUrl}?testing=true`
             },
             lastResponseAge: (value) => {
               if (value) {
@@ -389,6 +402,10 @@
                 }
               }
               return 'never'
+            },
+            renderUTCDate: (value) => {
+              const thisDate = new Date(value);
+              return `${thisDate.getUTCFullYear().toString()}-${(thisDate.getUTCMonth() + 1).toString().padStart(2, '0')}-${(thisDate.getUTCDate()).toString().padStart(2,'0')}`
             }
             
           }
