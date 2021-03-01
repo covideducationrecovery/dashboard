@@ -3,8 +3,11 @@
 
 ## Checklist for modifying Qualtrics Survey
 
-- [ ] Update, but do not publish the survey
-- [ ] Update the Web Service action as needed. If adding questions, make sure to use the "recode" outputs
+- [ ] Update the survey in qualtrics but do not publish the survey
+- [ ] Update the Web Service action as needed.
+  - [ ] If adding questions, make sure to use the "recode" outputs
+  - [ ] If adding/modifying a matrix question, make sure all rows of the matrix have elements
+  - [ ] ensure new questions also include a static element set to the qualtrics question ID (QIDxx)
 - [ ] Update the printable version of the survey:
   - [ ] Re-export the survey as a Word doc. Use these options:
     - [x] Show Question Numbers
