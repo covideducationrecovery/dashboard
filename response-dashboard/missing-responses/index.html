@@ -20,7 +20,7 @@
   <body>
     <div id="vue-app" v-cloak>
       <p>
-        Show countries without a response as of 
+        Show countries without a response since 
         ${filterDate | renderDate}
         <button onclick="vm.$data.filterDate = new Date('2021-01-24T00:00:00.000Z')">|&lt;</button>
         <button onclick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() - 864E5)">&lt;</button>
