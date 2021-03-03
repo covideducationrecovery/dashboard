@@ -1,0 +1,121 @@
+---
+---
+<html>
+  <head>
+    <title>Missing countries</title>
+    {% if site.safe == true %}
+    <script src="/js/vue.min.js" type="text/javascript"></script>
+    <link href="/css/all.min.css" rel="stylesheet">
+    {% else %}
+    <script src="/js/vue.js" type="text/javascript"></script>
+    <link href="/css/all.css" rel="stylesheet">
+    {% endif %}
+    <style>
+      table {border: 1px solid gray;}
+      [v-cloak] {display: none;}
+      button {border: none; border-radius: 5px; background-color: blue; color: white; padding: 5px}
+      button:active {background-color: #4040FF}
+    </style>
+  </head>
+  <body>
+    <div id="vue-app" v-cloak>
+      <p>
+        Show countries without a response as of 
+        ${filterDate | renderDate}
+        <button onclick="vm.$data.filterDate = new Date('2021-01-24T00:00:00.000Z')">|&lt;</button>
+        <button onclick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() - 864E5)">&lt;</button>
+        <button onclick="vm.$data.filterDate = new Date(vm.$data.filterDate.valueOf() + 864E5)">&gt;</button>
+        <button onclick="vm.$data.filterDate = new Date(new Date().setHours(0,0,0,0))">Today</button>
+      </p>
+      <p>Displaying <span id="tablerowcount"></span> countries. <button onclick="navigator.clipboard.writeText(document.querySelector('table').innerText)">Copy list</button></p>
+      <table>
+        <thead>
+          <th>Country Name</th>
+          <th>Country Code (WB)</th>
+          <th>Country Code (UNICEF)</th>
+          <th>Responsible Organization</th>
+          <th>World Bank Region</th>
+          <th>Most Recent Response Date</th>
+        </thead>
+        <tbody>
+          <tr v-for="country in countries" v-if="!country.mostRecentResponseDate || filterDate > country.mostRecentResponseDate">
+            <td>${country.fields.countryName}</td>
+            <td>${country.fields.wbCountryCode}</td>
+            <td>${country.fields.m49code}</td>
+            <td>${country.fields.responsibleOrganization}</td>
+            <td>${country.fields.wbRegion}</td>
+            <td>${country.mostRecentResponseDate | renderDate}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <script>
+      // replaces all the date values in country.fields.responseDates with the numeric equivalent
+      // and adds a country.mostRecentResponseDate with the most recent date
+      const convertCountryDatesAndSetMostRecentResponseDate = (countries) => {
+        for (country of countries) {
+          if (country.fields.responseDates) {
+            country.fields.responseDates.forEach((responseDate, i, responseDates) => {
+              responseDates[i] = Date.parse(responseDate);
+            });
+            country.mostRecentResponseDate = Math.max(...country.fields.responseDates)
+          }
+        }
+        return countries;
+      }
+
+      const updateListCounts = () => {
+        document.getElementById('tablerowcount').innerText = document.querySelectorAll('table tr').length.toString();
+      }
+
+      const renderData = (data) => {
+
+        const vueData = {
+          filterDate: (new Date('2021-02-17T00:00:00.000Z')),
+          countries: convertCountryDatesAndSetMostRecentResponseDate(data)
+        }
+        vm = new Vue({
+          el: '#vue-app',
+          data: vueData,
+          delimiters: ['${','}'],  // need to use these because jekyll competes for {{ and }}
+          filters: {
+            renderDate: (value) => {
+              if (value) {
+                return (new Date(value)).toJSON()
+              }
+              return ''
+            }
+          },
+          mounted: () => {
+            updateListCounts();
+          },
+          updated: () =>  {
+            vm.$nextTick(() => {
+              updateListCounts();
+            })
+          }
+        });
+      }
+
+      {% if site.safe == true %}
+      const dataSource = 'https://evening-retreat-17703.herokuapp.com/countries';
+      {% else %}
+      const dataSource = 'https://evening-retreat-17703.herokuapp.com/countries';
+      {% endif %}
+      // load the json data file and once it's ready, render it;
+      // errors thrown during any step of this process will be handled by the .catch
+      fetch(dataSource)
+        .then(response => response.json())
+        .then(data => {
+          renderData(data);
+        })
+      {% if site.safe == true %}
+        .catch(error => {
+          console.error(error)
+        });
+      {% endif %}
+    </script>
+
+    </script>
+  </body>
+</html>
