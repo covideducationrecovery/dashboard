@@ -1,0 +1,83 @@
+---
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <title>Response Dashboard Login</title>
+    <script type="text/javascript">
+      {% include utils.js %}
+    </script>
+    <style>
+      * {font-family: sans-serif;}
+      body {width: 100vw; height: 100vh; display: flex; flex-flow: column nowrap; align-items: center; justify-content: center; overflow:hidden;}
+      #loginform {border-radius: 1rem; padding: 2rem; background-color: #F0F0FF}
+      #identity, #password {display: block; width: 200px; margin-top: 1rem; margin-bottom: 1rem; padding: 0.3rem; border: 1px solid grey; border-radius: 0.3rem; font-size: x-large;}
+      #login {display: block; width: 100px; margin-top: 1rem; padding: 1em; font-size: larger; background-color: #002D72; color: white; border-radius: 0.3rem;}
+      #messageSpace {color:red; padding: 1rem;}
+    </style>
+  </head>
+  <body>
+    <div id="loginform">
+      <!-- <label for="identity">Name</label> -->
+      <input id="identity" type="text" placeholder="identity" autofocus />
+      <!-- <label for="password">Password</label> -->
+      <input id="password" type="password" placeholder="password" onkeydown="handleKeyPress(event);" />
+      <div>
+        <input id="save" type="checkbox" />
+        <label for="save">Remember me</label>  
+      </div>
+      <button id="login" onclick="attemptLogin(document.getElementById('identity').value, document.getElementById('password').value, document.getElementById('save').checked)" id="login-button">Login</button>
+    </div>
+    <div id="messageSpace">
+    </div>
+    <script>
+      // assume that if we're on this page we want to remove any previously stored token
+      JwtManager.remove();
+
+      const handleKeyPress = (event) => {
+        if (event.keyCode === 13) {
+          document.getElementById('login').click();
+        }
+      }
+      
+      // attempt to obtain a token from the API and store it locally
+      const attemptLogin = (identity, password, save) => {
+        if (!identity && !password) {
+          return
+        }
+        const authorizationHeaderValue = `Basic ${btoa(`${identity}:${password}`)}`
+        fetch('https://jhu-education-dashboard-beta.herokuapp.com/authenticate', {headers: {'Authorization': authorizationHeaderValue}})
+          .then(response => {
+            if (response.ok) {
+              response.json()
+                .then(data => {
+                  if (save) {
+                    JwtManager.set(data.token, localStorage);
+                  } else {
+                    JwtManager.set(data.token, sessionStorage);
+                  }
+                  if (document.referrer) {
+                    window.location = document.referrer;
+                  } else {
+                    window.location = '/response-dashboard';
+                  }
+                })
+            } else {
+              throw new Error('Invalid credentials; please try again')
+            }
+          })
+          .catch(error => {
+            document.getElementById('messageSpace').innerText = `${error}`;
+          })
+      }
+  
+      // document.getElementById('login-button').addEventListener('click', attemptLogin(document.getElementById('identity').value, document.getElementById('password').value));
+    </script>
+  </body>
+</html>

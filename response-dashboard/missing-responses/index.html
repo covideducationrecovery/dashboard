@@ -2,6 +2,12 @@
 ---
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <title>Missing countries</title>
     {% if site.safe == true %}
     <script src="/js/vue.min.js" type="text/javascript"></script>
@@ -10,6 +16,9 @@
     <script src="/js/vue.js" type="text/javascript"></script>
     <link href="/css/all.css" rel="stylesheet">
     {% endif %}
+    <script type="text/javascript">
+      {% include utils.js %}
+    </script>
     <style>
       table {border: 1px solid gray;}
       [v-cloak] {display: none;}
@@ -98,22 +107,33 @@
       }
 
       {% if site.safe == true %}
-      const dataSource = 'https://evening-retreat-17703.herokuapp.com/countries';
+      const dataSource = 'https://jhu-education-dashboard-beta.herokuapp.com/countries';
       {% else %}
-      const dataSource = 'https://evening-retreat-17703.herokuapp.com/countries';
+      const dataSource = 'https://jhu-education-dashboard-beta.herokuapp.com/countries';
       {% endif %}
-      // load the json data file and once it's ready, render it;
-      // errors thrown during any step of this process will be handled by the .catch
-      fetch(dataSource)
-        .then(response => response.json())
-        .then(data => {
-          renderData(data);
-        })
-      {% if site.safe == true %}
-        .catch(error => {
-          console.error(error)
-        });
-      {% endif %}
+
+      // if we have a token, use it to call the api, otherwise redirect to login screen
+      if (JwtManager.token) {
+        fetch(dataSource, {headers: {'Authorization': `Bearer ${JwtManager.token}`}})
+          .then(response => {
+            switch (response.status) {
+              case 200:
+                // huzzah we have the data
+                response.json().then(data => renderData(data));
+                break;
+              case 403: 
+                // denied because of invalid token
+                window.location = '../login'
+                break;
+              default:
+            }
+          })
+          .catch(error => {
+            console.error(error)
+          })
+      } else {
+        window.location = '../login'
+      }
     </script>
 
     </script>
