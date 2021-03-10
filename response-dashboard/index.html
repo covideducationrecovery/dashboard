@@ -109,7 +109,7 @@
                   ${surveyRound.startDate | renderUTCDate} to ${surveyRound.endDate | renderUTCDate}
                 </option>
               </select>
-              Global <span x-target="countries"></span>
+              Global <span x-target="countries-assigned"></span> (excludes unassigned countries)
             </p>  
           </div>
           <div>
@@ -132,8 +132,8 @@
         </div>  
       </section>
       <section id="countries">
-        <ul>
-          <li v-for="responsibleOrganization in responsibleOrganizations">
+        <ul id="countries-assigned">
+          <li v-for="responsibleOrganization in responsibleOrganizations" v-if="responsibleOrganization != 'unassigned'">
             <div class="responsible-organization" v-bind:class="('list-' + responsibleOrganization)">
               <h3>
                 ${responsibleOrganization}
@@ -179,11 +179,58 @@
               </ul>              
             </div>
           </li>
+        </ul>
+        <ul id="countries-unassigned">
+          <li v-for="responsibleOrganization in responsibleOrganizations" v-if="responsibleOrganization === 'unassigned'">
+            <div class="responsible-organization" v-bind:class="('list-' + responsibleOrganization)">
+              <h3>
+                ${responsibleOrganization}
+              </h3>
+              <ul v-bind:id="('list-' + responsibleOrganization)">
+                <li v-for="wbRegion in wbRegions" class="region">
+                  <h4>
+                    ${wbRegion.wbRegion} (${wbRegion.wbRegionCode}) 
+                  </h4>
+                  <ul class="countries" v-bind:id="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)">
+                    <li v-for="country in filterCountries(countries, responsibleOrganization, wbRegion.wbRegionCode)" class="country">
+                      <input v-bind:id="('country-' + country.fields.iso3166Alpha2Code)" type="checkbox" v-bind:checked="country.hasCurrentRoundResponse" disabled />
+                      <label v-bind:for="('country-' + country.fields.iso3166Alpha2Code)">
+                        <div>
+                          <div>
+                            <p>
+                              <i v-if="country.hasCurrentRoundResponse" class="fas fa-check"></i>
+                              <i v-else class="fas fa-times"></i> 
+                              ${country.fields.countryName}
+                            </p>
+                            <p v-if="country.hasCurrentRoundResponse" class="smaller">
+                              Response received ${new Date(country.fields.responseDates[country.currentRoundResponseIndex]).toLocaleDateString()}
+                            </p>
+                            <p v-else class="smaller">
+                              No response for this round
+                            </p>
+
+                          </div>
+                          <div v-if="country.hasCurrentRoundResponse">
+                            <a v-bind:href="country | previewResponseUrl" target="_blank"><i class="fas fa-file"></i>View this response</a>
+                            <a v-bind:href="country | retakeCurrentResponseUrl" target="_blank"><i class="fas fa-undo"></i>Change this response</a>
+                          </div>
+                          <div v-else>
+                            <a v-bind:href="country | newResponseWithMostRecentAnswersUrl" target="_blank"><i class="fas fa-play"></i>New response with previous answers</a>
+                            <a v-bind:href="country | newResponseBlankUrl" target="_blank"><i class="fas fa-plus"></i>New blank response</a>  
+                          </div>
+                        </div>
+                      </label>
+                    </li>          
+                  </ul>                 
+                </li>
+              </ul>              
+            </div>
+          </li>
         </ul>  
       </section>
       <section id="footer">
         <div class="text-center">
-          Version 1.2 - 
+          Version 1.3 - 
           <a v-bind:href="null | newResponseBlankPracticeUrl" target="_blank">Submit a practice survey response</a> -
           <a href="login">Log out <i class="fas fa-sign-out-alt"></i></a>
           <br /><br />
