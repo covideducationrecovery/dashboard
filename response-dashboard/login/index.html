@@ -69,7 +69,7 @@
                   }
                 })
             } else {
-              throw new Error('Invalid credentials; please try again')
+              throw new Error('Invalid credentials; please try again. (Identity and password are both case-sensitive.)')
             }
           })
           .catch(error => {
