@@ -9,6 +9,12 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
+    {% if site.safe == true %}
+    <link href="/css/all.min.css" rel="stylesheet">
+    {% else %}
+    <link href="/css/all.css" rel="stylesheet">
+    {% endif %}
+
     <title>Response Dashboard Login</title>
     <script type="text/javascript">
       {% include utils.js %}
@@ -18,8 +24,15 @@
       body {width: 100vw; height: 100vh; display: flex; flex-flow: column nowrap; align-items: center; justify-content: center; overflow:hidden;}
       #loginform {border-radius: 1rem; padding: 2rem; background-color: #F0F0FF}
       #identity, #password {display: block; width: 200px; margin-top: 1rem; margin-bottom: 1rem; padding: 0.3rem; border: 1px solid grey; border-radius: 0.3rem; font-size: x-large;}
-      #login {display: block; width: 100px; margin-top: 1rem; padding: 1em; font-size: larger; background-color: #002D72; color: white; border-radius: 0.3rem;}
+      #login {display: block; width: 150px; height: 4rem; margin-top: 1rem; margin-right: auto; margin-left: auto; padding: 1em; font-size: larger; background-color: #002D72; color: white; border-radius: 0.3rem;}
+      #login i {font-size: smaller;}
       #messageSpace {color:red; padding: 1rem;}
+      .loading-spinner {animation: infinite-rotate 2s linear infinite;}
+      @keyframes infinite-rotate {
+        from { transform: rotate(0deg) }
+        to { transform: rotate(360deg) }
+      }
+
     </style>
   </head>
   <body>
@@ -32,7 +45,7 @@
         <input id="save" type="checkbox" />
         <label for="save">Remember me</label>  
       </div>
-      <button id="login" onclick="attemptLogin(document.getElementById('identity').value, document.getElementById('password').value, document.getElementById('save').checked)" id="login-button">Login</button>
+      <button id="login" onclick="attemptLogin(document.getElementById('identity').value, document.getElementById('password').value, document.getElementById('save').checked)">Login</button>
     </div>
     <div id="messageSpace">
     </div>
@@ -49,8 +62,12 @@
       // attempt to obtain a token from the API and store it locally
       const attemptLogin = (identity, password, save) => {
         if (!identity && !password) {
+          document.getElementById('messageSpace').innerText = `An identity and password are required to log in.`;
+          document.getElementById('login').innerHTML = 'Login';
           return
         }
+        document.getElementById('login').innerHTML = '<div><i class="fas fa-spinner fa-3x loading-spinner"></i><div>';
+        document.querySelector('#login div').classList.add('loading-spinner');
         const authorizationHeaderValue = `Basic ${btoa(`${identity}:${password}`)}`
         fetch('https://jhu-education-dashboard-beta.herokuapp.com/authenticate', {headers: {'Authorization': authorizationHeaderValue}})
           .then(response => {
@@ -74,6 +91,8 @@
           })
           .catch(error => {
             document.getElementById('messageSpace').innerText = `${error}`;
+            document.getElementById('login').innerHTML = 'Login';
+
           })
       }
   
