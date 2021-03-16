@@ -1,0 +1,257 @@
+---
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    {% if site.safe == true %}
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link href="/css/all.min.css" rel="stylesheet">
+    {% else %}
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link href="/css/all.css" rel="stylesheet">
+    {% endif %}
+    <title>Global Survey Response Dashboard</title>
+    <style>
+      [v-cloak], .hidden {display: none;}
+      svg {fill: #F0F0F0}
+      {% include worldmap.css %}
+      .landxx:hover {opacity: 0.9; transition: opacity 0.25s linear; cursor: pointer;}
+      .status-open {fill: #88419d}
+      .status-extended-break {fill: #8c96c6;}
+      .status-closed {fill: #b3cde3;}
+      .status-unknown {fill: #edf8fb;}
+      .modality-none {fill: #a6611a;}
+      .modality-remote{fill: #dfc27d}
+      .modality-hybrid {fill: #f5f5f5}
+      .modality-in-person {fill: #80cdc1}
+      .vaccine-yes {fill: #fef0d9;}
+      .vaccine-no {fill: #e34a33;}
+      .vaccine-other {fill: #fdbb84}
+      /* .vaccine-unknown {fill: #494949;} */
+      /* .modality-unknown {fill: #018571} */
+      .map-key {max-height: 3rem; max-width: 3rem; display: flex; flex-flow: row nowrap;}
+      .map-key > svg {max-height: 3rem; max-width: 3rem;}
+
+</style>
+    <script type="text/javascript">
+      {% include utils.js %}
+    </script>
+  </head>
+  <body>
+    {% include navbar-preview.html %}
+
+    <div class="container mb-5">
+      <h1>Global maps</h1>
+      <div class="row text-center">
+        <h2>School System Status</h2>
+        <p>What is the current status of national school systems?</p>
+        <div id="status-map"></div>
+        <div class="map-key">
+          <div>
+            <svg viewbox="0 0 20 20"><rect class="status-open" x="0" y="0" width="20" height="20"></rect></svg>
+            Open
+          </div>
+          <div>
+            <svg viewbox="0 0 20 20"><rect class="status-extended-break" x="0" y="0" width="20" height="20"></rect></svg>
+            Extended Break
+          </div>
+          <div>
+            <svg viewbox="0 0 20 20"><rect class="status-closed" x="0" y="0" width="20" height="20"></rect></svg>
+            Closed due to COVID-19
+          </div>
+          <div>
+            <svg viewbox="0 0 20 20"><rect class="status-unknown" x="0" y="0" width="20" height="20"></rect></svg>
+            Unknown
+          </div>
+        </div>  
+      </div>
+      <div class="row text-center">
+        <h2>Education Modality</h2>
+        <p>How is education being provided in each country?</p>
+        <div id="modality-map"></div>
+        <div class="map-key">
+          <div>
+            <svg class="modality-none" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+            None
+          </div>
+          <div>
+            <svg class="modality-remote" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+            Remote
+          </div>
+          <div>
+            <svg class="modality-hybrid" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+            Hybrid
+          </div>
+          <div>
+            <svg class="modality-in-person" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+            In Person
+          </div>
+          <div>
+            <svg class="landxx countryxx modality-unknown " viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+            Unknown
+          </div>
+        </div>  
+      </div>
+      <div class="row text-center">
+        <h2>Vaccine Availability for Teachers</h2>
+        <p>Are vaccines available for teachers in each country?</p>
+        <div id="vaccine-map"></div>
+        <div class="map-key">
+          <div>
+            <svg class="vaccine-no" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+            Available
+          </div>
+          <div>
+            <svg class="vaccine-yes" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+            Not Available
+          </div>
+          <div>
+            <svg class="vaccine-other" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+            Other
+          </div>
+          <div>
+            <svg class="vaccine-unknown" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+            Unknown
+          </div>
+        </div>  
+      </div>
+    </div>
+
+    <div class="hidden">
+      {% include worldmap.svg %}
+    </div>
+
+    <script>
+      const prepareData = (countries) => {
+        countries.sort((country1, country2) => {
+          return country1.fields.countryName.localeCompare(country2.fields.countryName)
+        });
+        const schoolStatusStats = {open: 0, closed: 0, extendedBreak: 0}
+        const educationModalityStats = {none: 0, remote: 0, hybrid: 0, inPerson: 0, other: 0, multiple: 0}
+        const vaccineStats = {yes: 0, no: 0, other: 0, unknown: 0}
+        let totalResponses = 0
+        for (country of countries) {
+          if (country.fields.mostRecentResponseDate) {
+            totalResponses++
+            if (country.fields.mostRecentEducationStatusCode && (country.fields.mostRecentEducationStatusCode.includes('2') || country.fields.mostRecentEducationStatusCode.includes('3') || country.fields.mostRecentEducationStatusCode.includes('4'))) {
+              schoolStatusStats.open++
+            } else if (country.fields.mostRecentExtendedBreakCode && country.fields.mostRecentExtendedBreakCode.includes('1')) {
+              schoolStatusStats.extendedBreak++;
+            } else if (country.fields.mostRecentEducationStatusCode && country.fields.mostRecentEducationStatusCode.includes('1')) {
+              schoolStatusStats.closed++;
+            }
+          }
+          if (country.fields.mostRecentEducationStatusCode) {
+            if (country.fields.mostRecentEducationStatusCode.length > 1) {
+              educationModalityStats.multiple++;
+            }
+            if (country.fields.mostRecentEducationStatusCode.includes('1')) {educationModalityStats.none++}
+            if (country.fields.mostRecentEducationStatusCode.includes('2')) {educationModalityStats.remote++}
+            if (country.fields.mostRecentEducationStatusCode.includes('3')) {educationModalityStats.hybrid++}
+            if (country.fields.mostRecentEducationStatusCode.includes('4')) {educationModalityStats.inPerson++}
+            if (country.fields.mostRecentEducationStatusCode.includes('5')) {educationModalityStats.other++}
+          }
+          if (country.fields.mostRecentVaccineAvailabilityForTeachersCode) {
+            if (country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('1')) {vaccineStats.yes++}
+            if (country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('2')) {vaccineStats.no++}
+            if (country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('3')) {vaccineStats.other++}
+            if (country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('4')) {vaccineStats.unknown++}
+          }
+        }
+        return {countries: countries, schoolStatusStats: schoolStatusStats, educationModalityStats: educationModalityStats, vaccineStats: vaccineStats, totalResponses: totalResponses}
+      }
+
+      const renderData = (data) => {
+
+        newData = prepareData(data);
+
+        const map = document.getElementById('svg-worldmap')
+        const statusMap = map.cloneNode(true);
+        statusMap.id = 'status-map-svg';
+        const modalityMap = map.cloneNode(true);
+        modalityMap.id = 'modality-map.svg';
+        const vaccineMap = map.cloneNode(true);
+        vaccineMap.id = 'vaccine-map-svg';
+
+        for (const country of newData.countries) {
+          if (country.fields.mostRecentResponseDate) {
+            if (country.fields.iso3166Alpha2Code) {
+              const statusMapCountryNode = statusMap.getElementById(country.fields.iso3166Alpha2Code.toLowerCase());
+              const modalityMapCountryNode = modalityMap.getElementById(country.fields.iso3166Alpha2Code.toLowerCase());
+              const vaccineMapCountryNode = vaccineMap.getElementById(country.fields.iso3166Alpha2Code.toLowerCase());
+              if (statusMapCountryNode) {
+                if (country.fields.mostRecentEducationStatusCode && (country.fields.mostRecentEducationStatusCode.includes('2') || country.fields.mostRecentEducationStatusCode.includes('3') || country.fields.mostRecentEducationStatusCode.includes('4'))) {
+                  statusMapCountryNode.classList.add('status-open');
+                } else if (country.fields.mostRecentExtendedBreakCode && country.fields.mostRecentExtendedBreakCode.includes('1')) {
+                  statusMapCountryNode.classList.add('status-extended-break');
+                } else if (country.fields.mostRecentEducationStatusCode && country.fields.mostRecentEducationStatusCode.includes('1')) {
+                  statusMapCountryNode.classList.add('status-closed');
+                } else {
+                  statusMapCountryNode.classList.add('status-unknown');
+                }
+                if (country.fields.mostRecentEducationStatusCode) {
+                  if (country.fields.mostRecentEducationStatusCode.includes('1')) {
+                    modalityMapCountryNode.classList.add('modality-none');
+                  } else if (country.fields.mostRecentEducationStatusCode.includes('2')) {
+                    modalityMapCountryNode.classList.add('modality-remote')
+                  } else if (country.fields.mostRecentEducationStatusCode.includes('3')) {
+                    modalityMapCountryNode.classList.add('modality-hybrid')
+                  } else if (country.fields.mostRecentEducationStatusCode.includes('4')) {
+                    modalityMapCountryNode.classList.add('modality-in-person')
+                  } else if (country.fields.mostRecentEducationStatusCode.includes('5')) {
+                    modalityMapCountryNode.classList.add('modality-other')
+                  }
+                }
+                if (country.fields.mostRecentVaccineAvailabilityForTeachersCode) {
+                  if (country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('1')) {
+                    vaccineMapCountryNode.classList.add('vaccine-yes');
+                  } else if (country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('2')) {
+                    vaccineMapCountryNode.classList.add('vaccine-no');
+                  } else if (country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('3')) {
+                    vaccineMapCountryNode.classList.add('vaccine-other');
+                  } else if (country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('4')) {
+                    vaccineMapCountryNode.classList.add('vaccine-unknown');
+                  }
+                }
+              }
+            }
+          }
+        }
+        document.getElementById('status-map').appendChild(statusMap);
+        document.getElementById('modality-map').appendChild(modalityMap);
+        document.getElementById('vaccine-map').appendChild(vaccineMap);
+      }
+
+      // if we have a token, use it to call the api, otherwise redirect to login screen
+      const dataSource = 'https://jhu-education-dashboard-beta.herokuapp.com/countries';
+      if (JwtManager.token) {
+        fetch(dataSource, {headers: {'Authorization': `Bearer ${JwtManager.token}`}})
+          .then(response => {
+            switch (response.status) {
+              case 200:
+                // huzzah we have the data
+                response.json().then(data => renderData(data));
+                break;
+              case 403: 
+                // denied because of invalid token
+                window.location = '/login';
+                break;
+              default:
+            }
+          })
+          .catch(error => {
+            document.getElementById(`loading`).innerText = "Error loading the data. We apologize for the inconvenience; please try again later.";
+            console.error(error);
+          })
+      } else {
+        window.location = '/login';
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,166 @@
+---
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    {% if site.safe == true %}
+    <script src="/js/vue.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link href="/css/all.min.css" rel="stylesheet">
+    {% else %}
+    <script src="/js/vue.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link href="/css/all.css" rel="stylesheet">
+    {% endif %}
+    <title>Global Survey Response Dashboard</title>
+    <style>
+      [v-cloak] {display: none;}
+    </style>
+    <script type="text/javascript">
+      {% include utils.js %}
+    </script>
+  </head>
+  <body>
+    {% include navbar-preview.html %}
+
+    <div id="vue-app" class="container" v-cloak>
+      <h1>Details by country</h1>
+      <table class="table table-sm table-hover">
+        <thead>
+          <tr>
+            <th>Country</th>
+            <th>Last Updated</th>
+            <th>Schools Status</th>
+            <th>Education Modality</th>
+            <th>Teacher Vaccinations</th>
+            <th>In-Person Education Suppports</th>  
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="country of countries" v-if="country.fields.mostRecentResponseDate">
+            <td>${ country.fields.countryName}</td>
+            <td>${ country.fields.mostRecentResponseDate | iso8601ToLocaleDateString }</td>
+            <td>
+              <span class="badge bg-success" v-if="country.fields.mostRecentEducationStatusCode && (country.fields.mostRecentEducationStatusCode.includes('2') || country.fields.mostRecentEducationStatusCode.includes('3') || country.fields.mostRecentEducationStatusCode.includes('4'))">Open</span>
+              <span class="badge bg-secondary" v-else-if="country.fields.mostRecentExtendedBreakCode && country.fields.mostRecentExtendedBreakCode.includes('1')">Extended Break</span>
+              <span class="badge bg-danger" v-else-if="country.fields.mostRecentEducationStatusCode && country.fields.mostRecentEducationStatusCode.includes('1')">Closed</span>
+            </td>
+            <td v-if="country.fields.mostRecentEducationStatusCode">
+              <span class="badge bg-danger" v-if="country.fields.mostRecentEducationStatusCode.includes('1')">None</span>
+              <span class="badge bg-secondary" v-if="country.fields.mostRecentEducationStatusCode.includes('2')">Remote</span>
+              <span class="badge bg-info" v-if="country.fields.mostRecentEducationStatusCode.includes('3')">Hybrid</span>
+              <span class="badge bg-dark" v-if="country.fields.mostRecentEducationStatusCode.includes('4')">In-person</span>
+              <span class="badge bg-warning" v-if="country.fields.mostRecentEducationStatusCode.includes('5')">Other</span>
+            </td>
+            <td v-else></td>
+            <td v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode">
+              <span class="badge bg-success" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('1')">Yes</span>
+              <span class="badge bg-danger" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('2')">No</span>
+              <span class="badge bg-info" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('3')">Other</span>
+              <span class="badge bg-secondary" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('4')">Unknown</span>
+            </td>
+            <td v-else></td>
+            <td>
+              <div v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary && !country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('7') && !country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('8')">
+                <small class="text-muted">Pre-Primary</small>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('1')">School Day Changes</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('2')">School Year Changes</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('3')">Teacher Tutoring</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('4')">Non-Teacher Tutoring</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('5')">Targeted Remedial Measres</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('6')">Other</span>                
+              </div>
+              <div v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary && !country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('7') && !country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('8')">
+                <small class="text-muted">Primary</small>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('1')">School Day Changes</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('2')">School Year Changes</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('3')">Teacher Tutoring</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('4')">Non-Teacher Tutoring</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('5')">Targeted Remedial Measres</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('6')">Other</span>                
+              </div>
+              <div v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary && !country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('7') && !country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('8')">
+                <small class="text-muted">Lower Secondary</small>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('1')">School Day Changes</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('2')">School Year Changes</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('3')">Teacher Tutoring</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('4')">Non-Teacher Tutoring</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('5')">Targeted Remedial Measres</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('6')">Other</span>                
+              </div>
+              <div v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary && !country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('7') && !country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('8')">
+                <small class="text-muted">Upper Secondary</small>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('1')">School Day Changes</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('2')">School Year Changes</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('3')">Teacher Tutoring</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('4')">Non-Teacher Tutoring</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('5')">Targeted Remedial Measres</span>
+                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('6')">Other</span>                
+              </div>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <script>
+
+      const prepareCountriesData = (countries) => {
+        countries.sort((country1, country2) => {
+          return country1.fields.countryName.localeCompare(country2.fields.countryName)
+        });
+        return countries
+      }
+
+      const renderData = (data) => {
+        vm = new Vue({
+          el: '#vue-app',
+          data: {countries: prepareCountriesData(data)},
+          delimiters: ['${','}'],  // need to use these because jekyll competes for {{ and }}
+          filters: {
+            iso8601ToLocaleDateString: (value) => {
+              if (value) {
+                return (new Date(value)).toLocaleDateString();
+              } else {
+                return null
+              }
+            }
+          }
+        });
+      }
+
+      // if we have a token, use it to call the api, otherwise redirect to login screen
+      const dataSource = 'https://jhu-education-dashboard-beta.herokuapp.com/countries';
+      if (JwtManager.token) {
+        fetch(dataSource, {headers: {'Authorization': `Bearer ${JwtManager.token}`}})
+          .then(response => {
+            switch (response.status) {
+              case 200:
+                // huzzah we have the data
+                response.json().then(data => renderData(data));
+                break;
+              case 403: 
+                // denied because of invalid token
+                window.location = '/login';
+                break;
+              default:
+            }
+          })
+          .catch(error => {
+            document.getElementById(`loading`).innerText = "Error loading the data. We apologize for the inconvenience; please try again later.";
+            console.error(error);
+          })
+      } else {
+        window.location = '/login';
+      }
+    </script>
+  </body>
+</html>
