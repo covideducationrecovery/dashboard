@@ -26,17 +26,18 @@
       .status-extended-break {fill: #8c96c6;}
       .status-closed {fill: #b3cde3;}
       .status-unknown {fill: #edf8fb;}
-      .modality-none {fill: #225ea8;}
-      .modality-remote{fill: #41b6c4}
-      .modality-hybrid {fill: #a1dab4}
-      .modality-in-person {fill: #ffffcc}
+      .modality-none {fill: #f6eff7;}
+      .modality-remote{fill: #bdc9e1}
+      .modality-hybrid {fill: #67a9cf}
+      .modality-in-person {fill: #1c9099}
+      .modality-multiple {fill: #016c59}
       .vaccine-yes {fill: #fef0d9;}
       .vaccine-no {fill: #e34a33;}
       .vaccine-other {fill: #fdbb84}
       /* .vaccine-unknown {fill: #494949;} */
       /* .modality-unknown {fill: #018571} */
-      .map-key {max-height: 3rem; max-width: 3rem; display: flex; flex-flow: row nowrap;}
-      .map-key > svg {max-height: 3rem; max-width: 3rem;}
+      .map-key {display: flex; flex-flow: row nowrap; align-items: center; justify-content: center; font-size: small;}
+      .map-key-color {height: 2rem; width: 2rem; margin: 0.2rem;}
 
 </style>
     <script type="text/javascript">
@@ -48,75 +49,79 @@
 
     <div class="container mb-5">
       <h1>Global maps</h1>
-      <div class="row text-center">
+      <div class="row text-center my-3">
         <h2>School System Status</h2>
         <p>What is the current status of national school systems?</p>
         <div id="status-map"></div>
-        <div class="map-key">
-          <div>
-            <svg viewbox="0 0 20 20"><rect class="status-open" x="0" y="0" width="20" height="20"></rect></svg>
+        <div class="map-key w-100 my-3">
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="status-open map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
             Open
           </div>
-          <div>
-            <svg viewbox="0 0 20 20"><rect class="status-extended-break" x="0" y="0" width="20" height="20"></rect></svg>
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="status-extended-break map-key-color"viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
             Extended Break
           </div>
-          <div>
-            <svg viewbox="0 0 20 20"><rect class="status-closed" x="0" y="0" width="20" height="20"></rect></svg>
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="status-closed map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
             Closed due to COVID-19
           </div>
-          <div>
-            <svg viewbox="0 0 20 20"><rect class="status-unknown" x="0" y="0" width="20" height="20"></rect></svg>
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="status-unknown map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
             Unknown
           </div>
         </div>  
       </div>
-      <div class="row text-center">
+      <div class="row text-center my-3">
         <h2>Education Modality</h2>
         <p>How is education being provided in each country?</p>
         <div id="modality-map"></div>
-        <div class="map-key">
-          <div>
-            <svg class="modality-none" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+        <div class="map-key w-100 my-3">
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="modality-none map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
             None
           </div>
-          <div>
-            <svg class="modality-remote" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
-            Remote
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="modality-remote map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+            Remote only
           </div>
-          <div>
-            <svg class="modality-hybrid" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
-            Hybrid
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="modality-hybrid map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+            Hybrid only
           </div>
-          <div>
-            <svg class="modality-in-person" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
-            In Person
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="modality-in-person map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+            In Person only
           </div>
-          <div>
-            <svg class="landxx countryxx modality-unknown " viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="modality-multiple map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+            Mixed/Multiple
+          </div>
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="landxx countryxx modality-unknown map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
             Unknown
           </div>
         </div>  
       </div>
-      <div class="row text-center">
+      <div class="row text-center my-3">
         <h2>Vaccine Availability for Teachers</h2>
         <p>Are vaccines available for teachers in each country?</p>
         <div id="vaccine-map"></div>
-        <div class="map-key">
-          <div>
-            <svg class="vaccine-no" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+        <div class="map-key w-100 my-3">
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="vaccine-no map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
             Available
           </div>
-          <div>
-            <svg class="vaccine-yes" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="vaccine-yes map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
             Not Available
           </div>
-          <div>
-            <svg class="vaccine-other" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="vaccine-other map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
             Other
           </div>
-          <div>
-            <svg class="vaccine-unknown" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
+          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
+            <svg class="vaccine-unknown map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
             Unknown
           </div>
         </div>  
@@ -196,7 +201,9 @@
                   statusMapCountryNode.classList.add('status-unknown');
                 }
                 if (country.fields.mostRecentEducationStatusCode) {
-                  if (country.fields.mostRecentEducationStatusCode.includes('1')) {
+                  if (country.fields.mostRecentEducationStatusCode.length > 1) {
+                    modalityMapCountryNode.classList.add('modality-multiple');
+                  } else if (country.fields.mostRecentEducationStatusCode.includes('1')) {
                     modalityMapCountryNode.classList.add('modality-none');
                   } else if (country.fields.mostRecentEducationStatusCode.includes('2')) {
                     modalityMapCountryNode.classList.add('modality-remote')
