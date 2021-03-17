@@ -187,9 +187,9 @@
         for (const country of newData.countries) {
           if (country.fields.mostRecentResponseDate) {
             if (country.fields.iso3166Alpha2Code) {
-              const statusMapCountryNode = statusMap.getElementById(country.fields.iso3166Alpha2Code.toLowerCase());
-              const modalityMapCountryNode = modalityMap.getElementById(country.fields.iso3166Alpha2Code.toLowerCase());
-              const vaccineMapCountryNode = vaccineMap.getElementById(country.fields.iso3166Alpha2Code.toLowerCase());
+              const statusMapCountryNode = statusMap.querySelector(`#${country.fields.iso3166Alpha2Code.toLowerCase()}`);
+              const modalityMapCountryNode = modalityMap.querySelector(`#${country.fields.iso3166Alpha2Code.toLowerCase()}`);
+              const vaccineMapCountryNode = vaccineMap.querySelector(`#${country.fields.iso3166Alpha2Code.toLowerCase()}`);
               if (statusMapCountryNode) {
                 if (country.fields.mostRecentEducationStatusCode && (country.fields.mostRecentEducationStatusCode.includes('2') || country.fields.mostRecentEducationStatusCode.includes('3') || country.fields.mostRecentEducationStatusCode.includes('4'))) {
                   statusMapCountryNode.classList.add('status-open');
