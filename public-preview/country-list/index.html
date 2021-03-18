@@ -29,23 +29,26 @@
   <body>
     {% include navbar-preview.html %}
 
-    <div id="vue-app" class="container" v-cloak>
-      <h1>Details by country</h1>
+    <div id="vue-app" class="container-fluid" v-cloak>
+      <h1>Country Statistics</h1>
       <table class="table table-sm table-hover">
         <thead>
           <tr>
             <th>Country</th>
-            <th>Last Updated</th>
+            <th>World Bank Region</th>
             <th>Schools Status</th>
             <th>Education Modality</th>
-            <th>Teacher Vaccinations</th>
-            <th>In-Person Education Suppports</th>  
+            <th>Teacher Vaccinations Prioritized</th>
+            <th>Vaccines Authorized (OWID)</th>
+            <th>In-Person Education Suppports</th>
+            <th>Remote Education Supports</th>
+            <th>Last Updated</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="country of countries" v-if="country.fields.mostRecentResponseDate">
             <td>${ country.fields.countryName}</td>
-            <td>${ country.fields.mostRecentResponseDate | iso8601ToLocaleDateString }</td>
+            <td>${ country.fields.wbRegion}</td>
             <td>
               <span class="badge bg-success" v-if="country.fields.mostRecentEducationStatusCode && (country.fields.mostRecentEducationStatusCode.includes('2') || country.fields.mostRecentEducationStatusCode.includes('3') || country.fields.mostRecentEducationStatusCode.includes('4'))">Open</span>
               <span class="badge bg-secondary" v-else-if="country.fields.mostRecentExtendedBreakCode && country.fields.mostRecentExtendedBreakCode.includes('1')">Extended Break</span>
@@ -67,44 +70,21 @@
             </td>
             <td v-else></td>
             <td>
-              <div v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary && !country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('7') && !country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('8')">
-                <small class="text-muted">Pre-Primary</small>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('1')">School Day Changes</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('2')">School Year Changes</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('3')">Teacher Tutoring</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('4')">Non-Teacher Tutoring</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('5')">Targeted Remedial Measres</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrePrimary.includes('6')">Other</span>                
-              </div>
-              <div v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary && !country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('7') && !country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('8')">
-                <small class="text-muted">Primary</small>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('1')">School Day Changes</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('2')">School Year Changes</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('3')">Teacher Tutoring</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('4')">Non-Teacher Tutoring</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('5')">Targeted Remedial Measres</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportPrimary.includes('6')">Other</span>                
-              </div>
-              <div v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary && !country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('7') && !country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('8')">
-                <small class="text-muted">Lower Secondary</small>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('1')">School Day Changes</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('2')">School Year Changes</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('3')">Teacher Tutoring</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('4')">Non-Teacher Tutoring</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('5')">Targeted Remedial Measres</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportLowerSecondary.includes('6')">Other</span>                
-              </div>
-              <div v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary && !country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('7') && !country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('8')">
-                <small class="text-muted">Upper Secondary</small>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('1')">School Day Changes</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('2')">School Year Changes</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('3')">Teacher Tutoring</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('4')">Non-Teacher Tutoring</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('5')">Targeted Remedial Measres</span>
-                <span class="badge bg-info" v-if="country.fields.mostRecentInPersonAdditionalSupportUpperSecondary.includes('6')">Other</span>                
+              <span v-if="country.fields.owidHasVaccine" class="badge bg-success text-center"><i class="fas fa-check"></i></span>
+            </td>
+            <td>
+              <div v-for="field in mostRecentInPersonAdditionalSupportFields" v-if="country.fields[field.name] && !country.fields[field.name].includes('7') && !country.fields[field.name].includes('8')">
+                <small class="text-muted">${field.text}</small>
+                <span class="badge bg-info mx-1" v-for="supportType in mostRecentInPersonAdditionalSupportTypes" v-if="country.fields[field.name].includes(supportType.value)" v-bind:title="supportType.title"><i v-bind:class="'fas fa-' + supportType.faIcon"></i></span>
               </div>
             </td>
-
+            <td>
+              <div v-for="field in mostRecentRemoteEducationModalityFields" v-if="country.fields[field.name] && !country.fields[field.name].includes('6') && !country.fields[field.name].includes('7')">
+                <small class="text-muted">${field.text}</small>
+                <span class="badge bg-info mx-1" v-for="modalityType in mostRecentRemoteEducationModalityTypes" v-if="country.fields[field.name].includes(modalityType.value)" v-bind:title="modalityType.title"><i v-bind:class="'fas fa-' + modalityType.faIcon"></i></span>
+              </div>
+            </td>
+            <td>${ country.fields.mostRecentResponseDate | iso8601ToLocaleDateString }</td>
           </tr>
         </tbody>
       </table>
@@ -113,6 +93,36 @@
 
     <script>
 
+      const mostRecentInPersonAdditionalSupportFields = [
+        {name: 'mostRecentInPersonAdditionalSupportPrePrimary', text: 'Pre-Primary'},
+        {name: 'mostRecentInPersonAdditionalSupportPrimary', text: 'Primary'},
+        {name: 'mostRecentInPersonAdditionalSupportLowerSecondary', text: 'Lower Secondary'},
+        {name: 'mostRecentInPersonAdditionalSupportUpperSecondary', text: 'Upper Secondary'}
+      ]
+      const mostRecentInPersonAdditionalSupportTypes = [
+        {value: '1', title: 'School Day Changes', faIcon: 'calendar-day'},
+        {value: '2', title: 'School Year Changes', faIcon: 'calendar-alt'},
+        {value: '3', title: 'Teacher Tutoring', faIcon: 'school'},
+        {value: '4', title: 'Non-Teacher Tutoring', faIcon: 'home'},
+        {value: '5', title: 'Targeted Remedial Measures', faIcon: 'bullseye'},
+        {value: '6', title: 'Other', faIcon: 'question'}
+      ]
+      const mostRecentRemoteEducationModalityFields = [
+        {name: 'mostRecentRemoteEducationModalitiesPrePrimaryCode', text: 'Pre-Primary'},
+        {name: 'mostRecentRemoteEducationModalitiesPrimaryCode', text: 'Primary'},
+        {name: 'mostRecentRemoteEducationModalitiesLowerSecondaryCode', text: 'Lower Secondary'},
+        {name: 'mostRecentRemoteEducationModalitiesUpperSecondaryCode', text: 'Upper Secondary'},
+        {name: 'mostRecentRemoteEducationModalitiesHigherCode', text: 'Higher Education'},
+        {name: 'mostRecentRemoteEducationModalitiesVocationalCode', text: 'Technical/Vocational'}
+      ]
+      const mostRecentRemoteEducationModalityTypes = [
+        {value: '1', title: 'Online platforms', faIcon: 'globe'},
+        {value: '2', title: 'Television', faIcon: 'tv'},
+        {value: '3', title: 'Radio', faIcon: 'broadcast-tower'},
+        {value: '4', title: 'Mobile devices', faIcon: 'mobile'},
+        {value: '5', title: 'Take-home packages', faIcon: 'paperclip'},
+        {value: '8', title: 'Tutoring', faIcon: 'chalkboard-teacher'}
+      ]
       const prepareCountriesData = (countries) => {
         countries.sort((country1, country2) => {
           return country1.fields.countryName.localeCompare(country2.fields.countryName)
@@ -123,7 +133,13 @@
       const renderData = (data) => {
         vm = new Vue({
           el: '#vue-app',
-          data: {countries: prepareCountriesData(data)},
+          data: {
+            countries: prepareCountriesData(data),
+            mostRecentInPersonAdditionalSupportFields: mostRecentInPersonAdditionalSupportFields,
+            mostRecentInPersonAdditionalSupportTypes: mostRecentInPersonAdditionalSupportTypes,
+            mostRecentRemoteEducationModalityFields: mostRecentRemoteEducationModalityFields,
+            mostRecentRemoteEducationModalityTypes: mostRecentRemoteEducationModalityTypes
+          },
           delimiters: ['${','}'],  // need to use these because jekyll competes for {{ and }}
           filters: {
             iso8601ToLocaleDateString: (value) => {
