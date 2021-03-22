@@ -11,10 +11,12 @@
     <link rel="manifest" href="/site.webmanifest">
     {% if site.safe == true %}
     <script src="/js/vue.min.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.bundle.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link href="/css/all.min.css" rel="stylesheet">
     {% else %}
     <script src="/js/vue.js" type="text/javascript"></script>
+    <script src="/js/bootstrap.bundle.js" type="text/javascript"></script>
     <link rel="stylesheet" href="/css/bootstrap.css">
     <link href="/css/all.css" rel="stylesheet">
     {% endif %}
@@ -36,11 +38,11 @@
           <tr>
             <th>Country</th>
             <th>World Bank Region</th>
-            <th>Schools Status</th>
+            <th>Education Status</th>
             <th>Education Modality</th>
             <th>Teacher Vaccinations Prioritized</th>
-            <th>Vaccines Authorized (OWID)</th>
-            <th>In-Person Education Suppports</th>
+            <th>Vaccines Authorized <span class="badge bg-secondary rounded-pill" style="opacity: 0.5" title="Courtesy of Our World In Data"><i class="fas fa-info"></i></span></th>
+            <th>In-Person Education Supports</th>
             <th>Remote Education Supports</th>
             <th>Last Updated</th>
           </tr>
@@ -50,21 +52,21 @@
             <td>${ country.fields.countryName}</td>
             <td>${ country.fields.wbRegion}</td>
             <td>
-              <span class="badge bg-success" v-if="country.fields.mostRecentEducationStatusCode && (country.fields.mostRecentEducationStatusCode.includes('2') || country.fields.mostRecentEducationStatusCode.includes('3') || country.fields.mostRecentEducationStatusCode.includes('4'))">Open</span>
-              <span class="badge bg-secondary" v-else-if="country.fields.mostRecentExtendedBreakCode && country.fields.mostRecentExtendedBreakCode.includes('1')">Extended Break</span>
-              <span class="badge bg-danger" v-else-if="country.fields.mostRecentEducationStatusCode && country.fields.mostRecentEducationStatusCode.includes('1')">Closed</span>
+              <span class="badge bg-success" v-if="country.fields.mostRecentEducationStatusCode && (country.fields.mostRecentEducationStatusCode.includes('2') || country.fields.mostRecentEducationStatusCode.includes('3') || country.fields.mostRecentEducationStatusCode.includes('4'))" title="Education services available"><i class="fas fa-check"></i></span>
+              <span class="badge bg-secondary" v-else-if="country.fields.mostRecentExtendedBreakCode && country.fields.mostRecentExtendedBreakCode.includes('1')" title="On extended break"><i class="fas fa-umbrella-beach"></i></span>
+              <span class="badge bg-danger" v-else-if="country.fields.mostRecentEducationStatusCode && country.fields.mostRecentEducationStatusCode.includes('1')" title="Education services unavailable"><i class="fas fa-times"></i></span>
             </td>
             <td v-if="country.fields.mostRecentEducationStatusCode">
-              <span class="badge bg-danger" v-if="country.fields.mostRecentEducationStatusCode.includes('1')">None</span>
-              <span class="badge bg-secondary" v-if="country.fields.mostRecentEducationStatusCode.includes('2')">Remote</span>
-              <span class="badge bg-info" v-if="country.fields.mostRecentEducationStatusCode.includes('3')">Hybrid</span>
-              <span class="badge bg-dark" v-if="country.fields.mostRecentEducationStatusCode.includes('4')">In-person</span>
-              <span class="badge bg-warning" v-if="country.fields.mostRecentEducationStatusCode.includes('5')">Other</span>
+              <span class="badge bg-danger" v-if="country.fields.mostRecentEducationStatusCode.includes('1')" title="No education services"><i class="fas fa-times"></i></span>
+              <span class="badge bg-secondary" v-if="country.fields.mostRecentEducationStatusCode.includes('2')" title="Remote"><i class="fas fa-home"></i></span>
+              <span class="badge bg-info" v-if="country.fields.mostRecentEducationStatusCode.includes('3')" title="Hybrid"><i class="fas fa-school"></i> + <i class="fas fa-home"></i></span>
+              <span class="badge bg-dark" v-if="country.fields.mostRecentEducationStatusCode.includes('4')" title="In-person"><i class="fas fa-school"></i></span>
+              <span class="badge bg-warning" v-if="country.fields.mostRecentEducationStatusCode.includes('5')" title="Other">Other</span>
             </td>
             <td v-else></td>
             <td v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode">
-              <span class="badge bg-success" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('1')">Yes</span>
-              <span class="badge bg-danger" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('2')">No</span>
+              <span class="badge bg-success" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('1')" title="Yes"><i class="fas fa-check"></i></span>
+              <span class="badge bg-danger" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('2')" title="No"><i class="fas fa-times"></i></span>
               <span class="badge bg-info" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('3')">Other</span>
               <span class="badge bg-secondary" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('4')">Unknown</span>
             </td>
@@ -73,16 +75,20 @@
               <span v-if="country.fields.owidHasVaccine" class="badge bg-success text-center"><i class="fas fa-check"></i></span>
             </td>
             <td>
-              <div v-for="field in mostRecentInPersonAdditionalSupportFields" v-if="country.fields[field.name] && !country.fields[field.name].includes('7') && !country.fields[field.name].includes('8')">
-                <small class="text-muted">${field.text}</small>
-                <span class="badge bg-info mx-1" v-for="supportType in mostRecentInPersonAdditionalSupportTypes" v-if="country.fields[field.name].includes(supportType.value)" v-bind:title="supportType.title"><i v-bind:class="'fas fa-' + supportType.faIcon"></i></span>
-              </div>
+              <table>
+                <tr v-for="field in mostRecentInPersonAdditionalSupportFields" v-if="country.fields[field.name] && !country.fields[field.name].includes('7') && !country.fields[field.name].includes('8')">
+                  <td><small class="text-muted">${field.text}</small></td>
+                  <td><span class="badge bg-info mx-1" v-for="supportType in mostRecentInPersonAdditionalSupportTypes" v-if="country.fields[field.name].includes(supportType.value)" v-bind:title="supportType.title"><i v-bind:class="'fas fa-' + supportType.faIcon"></i></span></td>
+                </tr>
+              </table>
             </td>
             <td>
-              <div v-for="field in mostRecentRemoteEducationModalityFields" v-if="country.fields[field.name] && !country.fields[field.name].includes('6') && !country.fields[field.name].includes('7')">
-                <small class="text-muted">${field.text}</small>
-                <span class="badge bg-info mx-1" v-for="modalityType in mostRecentRemoteEducationModalityTypes" v-if="country.fields[field.name].includes(modalityType.value)" v-bind:title="modalityType.title"><i v-bind:class="'fas fa-' + modalityType.faIcon"></i></span>
-              </div>
+              <table>
+                <tr v-for="field in mostRecentRemoteEducationModalityFields" v-if="country.fields[field.name] && !country.fields[field.name].includes('6') && !country.fields[field.name].includes('7')">
+                  <td><small class="text-muted">${field.text}</small></td>
+                  <td><span class="badge bg-info mx-1" v-for="modalityType in mostRecentRemoteEducationModalityTypes" v-if="country.fields[field.name].includes(modalityType.value)" v-bind:title="modalityType.title"><i v-bind:class="'fas fa-' + modalityType.faIcon"></i></span></td>
+                </tr>  
+              </table>
             </td>
             <td>${ country.fields.mostRecentResponseDate | iso8601ToLocaleDateString }</td>
           </tr>
