@@ -1,5 +1,6 @@
 port: 4002
 
+title: "COVID-19 Global Education Recovery Tracker"
 
 webrick:
   headers:

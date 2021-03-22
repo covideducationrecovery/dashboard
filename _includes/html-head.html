@@ -1,0 +1,75 @@
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    {% if site.safe == true %}
+      {% if page.libraries contains 'vuejs' %}
+    <script src="/js/vue.min.js" type="text/javascript"></script>
+      {% endif %}
+      {% if page.libraries contains 'd3js' %}
+    <script src="/js/d3.min.js" type="text/javascript"></script>
+      {% endif %}
+      {% if page.libraries contains 'bootstrap' %}
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+      {% endif %}
+      {% if page.libraries contains 'fontawesome' %}
+    <link href="/css/all.min.css" rel="stylesheet">
+      {% endif %}
+      {% if page.libraries contains 'tippy' %}
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
+      {% endif %}  
+    {% else %}
+      {% if page.libraries contains 'vuejs' %}
+    <script src="/js/vue.js" type="text/javascript"></script>
+      {% endif %}
+      {% if page.libraries contains 'd3js' %}
+    <script src="/js/d3.js" type="text/javascript"></script>
+      {% endif %}
+      {% if page.libraries contains 'bootstrap' %}
+    <script src="/js/bootstrap.bundle.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/css/bootstrap.css">
+      {% endif %}
+      {% if page.libraries contains 'fontawesome' %}
+    <link href="/css/all.css" rel="stylesheet">
+      {% endif %}
+      {% if page.libraries contains 'tippy' %}
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
+      {% endif %}  
+    {% endif %}
+
+    <title>{% if page.title %}{{page.title}}{% else if site.title %}{{site.title}}{% endif %}</title>
+    <style>
+      @font-face {
+        font-family: 'FuturaPTWebBook';
+        src:
+          url('/webfonts/Futura-PT_Book.woff2') format('woff2'),
+          url('/webfonts/Futura-PT_Book.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: 'FuturaPTWebDemi';
+        src:
+          url('/webfonts/Futura-PT_Demi.woff2') format('woff2'),
+          url('/webfonts/Futura-PT_Demi.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      html, body {font-family: FuturaPTWebBook;}
+
+      nav svg {height: 1.75em; width: 1.75em;}
+
+      {% if page.libraries contains 'vuejs' %}
+      [v-cloak] {display: none;}
+      {% endif %}
+    </style>
+    <script type="text/javascript">
+      {% include utils.js %}
+    </script>
