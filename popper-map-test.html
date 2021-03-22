@@ -1,0 +1,119 @@
+---
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Why is there a title?</title>
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
+    <script src="/js/vue.min.js" type="text/javascript"></script>
+
+    <script>
+      {% include utils.js %}
+    </script>
+    <style>
+      {% include worldmap.css %}
+      html, body {font-family: sans-serif;}
+      .hidden {display: none}
+      #svg-worldmap {fill: #FFFFFF00; stroke: #FFFFFF00;}
+      #svg-worldmap > g, #svg-worldmap > path {fill: #CCCCCC;}
+    </style>
+
+  </head>
+  <body>
+    <div id="vue-app">
+      {% include worldmap-no-titles.svg %}
+
+      <div id="maphover" class="hidden">
+        <div v-if="selectedCountry">
+          <div><span style="font-size: x-large">${selectedCountry.fields.countryName}</span> (As of ${selectedCountry.fields.mostRecentResponseDate | iso8601ToLocaleDateString})</div>
+          <div v-if="selectedCountry.fields.owidHasVaccine">Has authorized one or more COVID-19 vaccines</div>
+          <div v-else>Has not authorized any COVID-19 vaccines</div>
+        </div>
+      </div>
+    </div>
+    <script>
+
+      var vm;
+
+      const initTippy = () => {
+        tippy('#svg-worldmap > g, #svg-worldmap > path', {
+          followCursor: true,
+          allowHTML: true,
+          placement: 'right',
+          onShow(instance) {
+            const code = instance.reference.attributes.id.value;
+            const country = findCountryByIso3166Alpha2Code(vm.$data.countries, code);
+            if (country) {
+              vm.$data.selectedCountry = country;
+              Vue.nextTick(() =>{
+                instance.setContent(document.getElementById('maphover').innerHTML)
+              }, instance)
+            } else {
+              return false
+            }
+          }
+        })
+      }
+
+      const renderData = (data) => {
+        vm = new Vue({
+          el: '#vue-app',
+          data: {
+            countries: data,
+            selectedCountry: null
+          },
+          delimiters: ['${','}'],  // need to use these because jekyll competes for {{ and }}
+          filters: {
+            iso8601ToLocaleDateString: (value) => {
+              if (value) {
+                return (new Date(value)).toLocaleDateString();
+              } else {
+                return null
+              }
+            }
+          },
+          mounted() {
+            console.log(`mounted!`);
+            initTippy();
+          }
+        });
+      }
+
+      const findCountryByIso3166Alpha2Code = (countries, code) => {
+        if (code && countries) {
+          code = code.toUpperCase();
+          return countries.find((country) => {
+            return (country.fields.iso3166Alpha2Code === code)
+          });
+        }
+      }
+
+      // if we have a token, use it to call the api, otherwise redirect to login screen
+      const dataSource = 'https://jhu-education-dashboard-beta.herokuapp.com/countries';
+      if (JwtManager.token) {
+        fetch(dataSource, {headers: {'Authorization': `Bearer ${JwtManager.token}`}})
+          .then(response => {
+            switch (response.status) {
+              case 200:
+                // huzzah we have the data
+                response.json().then(data => renderData(data));
+                break;
+              case 403: 
+                // denied because of invalid token
+                window.location = '/login';
+                break;
+              default:
+            }
+          })
+          .catch(error => {
+            document.getElementById(`loading`).innerText = "Error loading the data. We apologize for the inconvenience; please try again later.";
+            console.error(error);
+          })
+      } else {
+        window.location = '/login';
+      }
+
+    </script>
+  </body>
+</html>

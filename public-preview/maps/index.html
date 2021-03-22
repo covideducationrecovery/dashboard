@@ -27,17 +27,18 @@
       svg {fill: #DDDDDD}
       {% include worldmap.css %}
       .landxx:hover {opacity: 0.9; transition: opacity 0.25s linear;}
-      .modality-in-person {fill: #1A49BF;}
-      .modality-hybrid-remote {fill: #2361FF;}
-      .modality-multiple {fill: #4F81FF;}
-      .modality-covid-closure {fill: #7BA0FF;}
-      .modality-extended-break {fill: #A7C0FF;}
+      .modality-in-person {fill: #2361FF;}
+      .modality-hybrid-remote {fill: #26B1FF;}
+      .modality-multiple {fill: #FF9100;}
+      .modality-extended-break {fill: #23FFC1;}
+      .modality-covid-closure {fill: #7423FF;}
       .modality-no-data {fill: #DDDDDD;}
 
       .vaccine-yes {fill: #FF9100;}
       .vaccine-other {fill: #FFBD66}
       .vaccine-no {fill: #FFD399;}
-      .map-key {display: flex; flex-flow: row nowrap; align-items: center; justify-content: center; font-size: small;}
+      .map-key {max-width: 600px; margin: auto; font-size: smaller;}
+      /* .map-key {display: flex; flex-flow: row nowrap; align-items: center; justify-content: center; font-size: small;} */
       .map-key-color {height: 2rem; width: 2rem; margin: 0.2rem;}
 
 </style>
@@ -52,33 +53,42 @@
       <h1>Global maps</h1>
       <div class="row text-center my-3">
         <h2>Education Modality</h2>
-        <p>How is education being provided in each country?</p>
+        <p>How is education being provided by country?</p>
         <div id="modality-map"></div>
         <div class="map-key w-100 my-3">
-          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
-            <svg class="modality-in-person map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
-            In-person
-          </div>
-          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
-            <svg class="modality-hybrid-remote map-key-color"viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
-            Hybrid / remote
-          </div>
-          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
-            <svg class="modality-multiple map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
-            Mixed / multiple
-          </div>
-          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
-            <svg class="modality-covid-closure map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
-            Closed due to COVID-19
-          </div>
-          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
-            <svg class="modality-extended-break map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
-            Extended break / holiday
-          </div>
-          <div class="map-key-item mx-1 d-flex flex-row align-items-center justify-content-start">
-            <svg class="modality-no-data map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg>
-            Unknown / no data
-          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col" colspan="2">Legend</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><svg class="modality-in-person map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg></td>
+                <td class="text-start"><strong>In-person education</strong>: Schools are open, and students have returned for in-person instruction.</td>
+              </tr>
+              <tr>
+                <td><svg class="modality-hybrid-remote map-key-color"viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg></td>
+                <td class="text-start"><strong>Hybrid/remote education</strong>:	Schools are open combining remote learning and in-person instruction and/or students are exclusively learning remotely.</td>
+              </tr>
+              <tr>
+                <td><svg class="modality-multiple map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg></td>
+                <td class="text-start"><strong>Mixed/multiple</strong>:Schools are operating with a combination of the following: in-person, hybrid, remote, and closed due to COVID-19</td>
+              </tr>
+              <tr>
+                <td><svg class="modality-extended-break map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg></td>
+                <td class="text-start"><strong>Extended Break</strong>: Schools are closed due to a  regular school calendar closure (e.g., holiday)</td>
+              </tr>
+              <tr>
+                <td><svg class="modality-covid-closure map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg></td>
+                <td class="text-start"><strong>No instruction/closed due to COVID-19</strong>:	Schools are closed due to COVID-19, and no education services currently available.</td>
+              </tr>
+              <tr>
+                <td><svg class="modality-no-data map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg></td>
+                <td class="text-start"><strong>Unknown/Data Not Available</strong>: Unable to obtain information through publicly available data.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>  
       </div>
       <div class="row text-center my-3">
