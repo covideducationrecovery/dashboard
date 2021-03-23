@@ -21,7 +21,7 @@ title: "Maps"
       .modality-no-data {fill: #DDDDDD;}
 
       .vaccine-yes {fill: #1A49BF;}
-      .vaccine-other {fill: #FFBD66;}
+      /* .vaccine-other {fill: #FFBD66;} */
       .vaccine-no {fill: #FFD399;}
       .map-key {max-width: 600px; margin: auto; font-size: smaller;}
       /* .map-key {display: flex; flex-flow: row nowrap; align-items: center; justify-content: center; font-size: small;} */
@@ -55,7 +55,7 @@ title: "Maps"
               </tr>
               <tr>
                 <td><svg class="modality-multiple map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg></td>
-                <td class="text-start"><strong>Mixed/multiple</strong>:Schools are operating with a combination of the following: in-person, hybrid, remote, and closed due to COVID-19</td>
+                <td class="text-start"><strong>Mixed/multiple</strong>: Schools are operating with a combination of the following: in-person, hybrid, remote, and closed due to COVID-19</td>
               </tr>
               <tr>
                 <td><svg class="modality-extended-break map-key-color" viewbox="0 0 20 20"><rect x="0" y="0" width="20" height="20"></rect></svg></td>
@@ -104,7 +104,7 @@ title: "Maps"
       <div class="hidden">
         {% include worldmap-no-titles.svg %}
       </div>
-      <div id="maphover" class="hidden">
+      <div id="modality-map-hover" class="hidden">
         <div v-if="selectedCountry">
           <div><span style="font-size: x-large">${selectedCountry.fields.countryName}</span></div>
           <hr />
@@ -120,13 +120,34 @@ title: "Maps"
               <div v-if="selectedCountry.fields.mostRecentEducationStatusCode.includes('4')"><i class="fas fa-school"></i> In person</div>
             </div>        
             <hr />
-            <div><small>As of ${selectedCountry.fields.mostRecentResponseDate | iso8601ToLocaleDateString}</small></div>     
+            <div><small>Updated ${selectedCountry.fields.mostRecentResponseDate | iso8601ToLocaleDateString}</small></div>     
           </div>
           <div v-else><small>No data available.</small></div>
         </div>
       </div>  
     </div>
-
+    <div id="vaccine-map-hover" class="hidden">
+      <div v-if="selectedCountry">
+        <div><span style="font-size: x-large">${selectedCountry.fields.countryName}</span></div>
+        <hr />
+        <div v-if="selectedCountry.fields.mostRecentResponseDate">
+          <div><strong>Vaccines</strong></div>
+          <div v-if="selectedCountry.fields.mostRecentExtendedBreakCode">
+            <div v-if="selectedCountry.fields.mostRecentExtendedBreakCode.includes('1')"><i class="fas fa-umbrella-beach"></i> Extended Break</div>
+          </div>
+          <div v-if="selectedCountry.fields.mostRecentEducationStatusCode">
+            <div v-if="selectedCountry.fields.mostRecentEducationStatusCode.includes('1')"><i class="fas fa-times"></i> Closed due to COVID-19</div>
+            <div v-if="selectedCountry.fields.mostRecentEducationStatusCode.includes('2')"><i class="fas fa-home"></i> Remote</div>
+            <div v-if="selectedCountry.fields.mostRecentEducationStatusCode.includes('3')"><i class="fas fa-school"></i> + <i class="fas fa-home"></i> Hybrid</div>
+            <div v-if="selectedCountry.fields.mostRecentEducationStatusCode.includes('4')"><i class="fas fa-school"></i> In person</div>
+          </div>        
+          <hr />
+          <div><small>Updated ${selectedCountry.fields.mostRecentResponseDate | iso8601ToLocaleDateString}</small></div>     
+        </div>
+        <div v-else><small>No data available.</small></div>
+      </div>
+    </div>  
+  </div>
 
     <script>
 
@@ -191,7 +212,7 @@ title: "Maps"
             if (country) {
               vm.$data.selectedCountry = country;
               Vue.nextTick(() =>{
-                instance.setContent(document.getElementById('maphover').innerHTML)
+                instance.setContent(document.getElementById('modality-map-hover').innerHTML)
               }, instance)
             } else {
               return false
