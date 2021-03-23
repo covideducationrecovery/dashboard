@@ -44,6 +44,15 @@
 
     <title>{% if page.title %}{{page.title}}{% else if site.title %}{{site.title}}{% endif %}</title>
     <style>
+     
+      @font-face {
+        font-family: 'FuturaPTWebLight';
+        src:
+          url('/webfonts//Futura-PT_Light.woff2') format('woff2'),
+          url('/webfonts/Futura-PT_Light.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+      }
       @font-face {
         font-family: 'FuturaPTWebBook';
         src:
@@ -62,9 +71,15 @@
         font-style: normal;
       }
 
-      html, body {font-family: FuturaPTWebBook;}
+      html, body {font-family: FuturaPTWebLight; font-size: 20px;}
+      h1, h2, h3 {font-family: FuturaPTWebDemi;}
+      strong, h4, h5, h6 {font-family: FuturaPTWebBook;}
+
+      nav {min-height: 120px; font-family: FuturaPTWebDemi;}
 
       nav svg {height: 1.75em; width: 1.75em;}
+
+      section {margin: 2em auto 1em auto; max-width: 1200px;}
 
       {% if page.libraries contains 'vuejs' %}
       [v-cloak], .hidden {display: none;}
