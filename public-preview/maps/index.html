@@ -307,7 +307,7 @@ title: "Maps"
 
 
       // if we have a token, use it to call the api, otherwise redirect to login screen
-      const dataSource = '/global.json'
+      const dataSource = '/data/global.json'
       // const dataSource = 'https://jhu-education-dashboard-beta.herokuapp.com/countries';
       if (JwtManager.token) {
         fetch(dataSource, {headers: {'Authorization': `Bearer ${JwtManager.token}`}})

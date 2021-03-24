@@ -21,7 +21,7 @@ libraries:
       <div class="d-flex flex-row justify-content-between align-items-center">
         <h1>Country Statistics</h1>
         <span>Latest Update: ${mostRecentResponseDate | iso8601ToLocaleDateString}</span>
-        <a class="btn btn-outline-primary" download href="/global.csv"><i class="fas fa-file-csv"></i> Download Data</a>
+        <a class="btn btn-outline-primary" download href="/data/global.csv"><i class="fas fa-file-csv"></i> Download Data</a>
       </div>
       <table class="table table-sm table-hover">
         <thead>
@@ -199,7 +199,7 @@ libraries:
       }
 
       // if we have a token, use it to call the api, otherwise redirect to login screen
-      const dataSource = '/global.json'
+      const dataSource = '/data/global.json'
       // const dataSource = 'https://jhu-education-dashboard-beta.herokuapp.com/countries';
       if (JwtManager.token) {
         fetch(dataSource, {headers: {'Authorization': `Bearer ${JwtManager.token}`}})
