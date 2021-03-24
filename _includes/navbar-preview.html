@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-sm navbar-light bg-light">
+<nav class="navbar navbar-expand-xxl navbar-light bg-light">
   <div class="container-fluid">
     <a class="navbar-brand" href="/public-preview/">
       <svg version="1.1" xmlns="http://www.w3.org/2000/svg"	xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 296.3" style="enable-background:new 0 0 300 296.3;" xml:space="preserve">
@@ -14,7 +14,10 @@
           <path class="st0" d="M242.8,215.1l-18.5-10.8c-3.2-1.8-7.3,0.9-6.8,4.5l6.4,34.1l2.7,14.2l6.8,35.7c0.5,4.1,5.9,4.5,7.7,1.4 l18.2-32.7l36.8-5.9c4.1-0.5,5.5-5.9,1.8-8.2l-40.9-24L242.8,215.1z"/>
         </g>
       </svg>
-      {{site.title}} <sup><span class="badge bg-warning text-dark">Preview</span></sup>
+      COVID-19 Global Education Recovery Tracker
+      {% if site.safe == true %}
+      <sup><span class="badge bg-warning text-dark">Preview</span></sup>
+      {% endif %}
     </a>  
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -22,22 +25,22 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/public-preview/">Stories</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="/public-preview/maps/">Maps</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/public-preview/graphs/">Graphs</a>
+          <a class="nav-link active" aria-current="page" href="/public-preview/country-list/">Countries</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/public-preview/country-list/">List</a>
+          <a class="nav-link active" aria-current="page" href="/public-preview/methodology/">Methodology</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Methodology</a>
+          <a class="nav-link active" aria-current="page" href="/public-preview/about#disclaimer">Disclaimer</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Disclaimer</a>
+          <a class="nav-link active" aria-current="page" href="/public-preview/about">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-primary" aria-current="page" href="/public-preview/contact">Contact Us</a>
         </li>
       </ul>
     </div>

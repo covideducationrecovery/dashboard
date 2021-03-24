@@ -22,7 +22,7 @@ title: "Maps"
 
       .vaccine-yes {fill: #1A49BF;}
       /* .vaccine-other {fill: #FFBD66;} */
-      .vaccine-no {fill: #FFD399;}
+      .vaccine-no {fill: #FFA733;}
       .map-key {max-width: 600px; margin: auto; font-size: smaller;}
       /* .map-key {display: flex; flex-flow: row nowrap; align-items: center; justify-content: center; font-size: small;} */
       .map-key-color {height: 2rem; width: 2rem; margin: 0.2rem;}
@@ -34,7 +34,7 @@ title: "Maps"
     <div id="vue-app" class="container mb-5">
       <h1>Global maps</h1>
       <div class="row text-center my-3">
-        <h2>Education Modality</h2>
+        <h2>School Status / Education Modality</h2>
         <p>How is education being provided by country?</p>
         <div id="modality-map"></div>
         <div class="map-key w-100 my-3">
@@ -124,29 +124,27 @@ title: "Maps"
           </div>
           <div v-else><small>No data available.</small></div>
         </div>
-      </div>  
-    </div>
-    <div id="vaccine-map-hover" class="hidden">
-      <div v-if="selectedCountry">
-        <div><span style="font-size: x-large">${selectedCountry.fields.countryName}</span></div>
-        <hr />
-        <div v-if="selectedCountry.fields.mostRecentResponseDate">
-          <div><strong>Vaccines</strong></div>
-          <div v-if="selectedCountry.fields.mostRecentExtendedBreakCode">
-            <div v-if="selectedCountry.fields.mostRecentExtendedBreakCode.includes('1')"><i class="fas fa-umbrella-beach"></i> Extended Break</div>
+      </div> 
+      <div id="vaccine-map-hover" class="hidden">
+        <div v-if="selectedCountry">
+          <div><span style="font-size: x-large">${selectedCountry.fields.countryName}</span></div>
+          <div v-if="selectedCountry.fields.mostRecentResponseDate">
+            <hr />
+            <div v-if="selectedCountry.fields.mostRecentVaccineAvailabilityForTeachersCode">
+              <div v-if="selectedCountry.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('1')"><i class="fas fa-check"></i> Teachers/School Staff are being vaccinated as a priority group</div>
+              <div v-if="selectedCountry.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('2')"><i class="fas fa-times"></i> Teachers/School Staff are not being vaccinated as a priority group</div>
+            </div>
+            <div>
+              <div v-if="selectedCountry.fields.owidHasVaccine"><i class="fas fa-syringe"></i> Vaccines have been authorized for distribtion.</div>
+              <div v-else><i class="fas fa-times"></i> Vaccines have not been authorized for distribution.</div>
+            </div>
+            <hr />
+            <div><small>Updated ${selectedCountry.fields.mostRecentResponseDate | iso8601ToLocaleDateString}</small></div>     
           </div>
-          <div v-if="selectedCountry.fields.mostRecentEducationStatusCode">
-            <div v-if="selectedCountry.fields.mostRecentEducationStatusCode.includes('1')"><i class="fas fa-times"></i> Closed due to COVID-19</div>
-            <div v-if="selectedCountry.fields.mostRecentEducationStatusCode.includes('2')"><i class="fas fa-home"></i> Remote</div>
-            <div v-if="selectedCountry.fields.mostRecentEducationStatusCode.includes('3')"><i class="fas fa-school"></i> + <i class="fas fa-home"></i> Hybrid</div>
-            <div v-if="selectedCountry.fields.mostRecentEducationStatusCode.includes('4')"><i class="fas fa-school"></i> In person</div>
-          </div>        
-          <hr />
-          <div><small>Updated ${selectedCountry.fields.mostRecentResponseDate | iso8601ToLocaleDateString}</small></div>     
+          <div v-else><small>No data available.</small></div>
         </div>
-        <div v-else><small>No data available.</small></div>
-      </div>
-    </div>  
+      </div>     
+    </div>
   </div>
 
     <script>
@@ -218,6 +216,23 @@ title: "Maps"
               return false
             }
           }
+        });
+        tippy('#svg-vaccine-map > g, #svg-vaccine-map > path', {
+          followCursor: true,
+          allowHTML: true,
+          placement: 'right',
+          onShow(instance) {
+            const code = instance.reference.attributes.id.value;
+            const country = findCountryByIso3166Alpha2Code(vm.$data.countries, code);
+            if (country) {
+              vm.$data.selectedCountry = country;
+              Vue.nextTick(() =>{
+                instance.setContent(document.getElementById('vaccine-map-hover').innerHTML)
+              }, instance)
+            } else {
+              return false
+            }
+          }
         })
       }
 
@@ -283,7 +298,8 @@ title: "Maps"
 
 
       // if we have a token, use it to call the api, otherwise redirect to login screen
-      const dataSource = 'https://jhu-education-dashboard-beta.herokuapp.com/countries';
+      const dataSource = '/global.json'
+      // const dataSource = 'https://jhu-education-dashboard-beta.herokuapp.com/countries';
       if (JwtManager.token) {
         fetch(dataSource, {headers: {'Authorization': `Bearer ${JwtManager.token}`}})
           .then(response => {

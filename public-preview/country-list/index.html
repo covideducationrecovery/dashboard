@@ -3,29 +3,36 @@ libraries:
  - fontawesome
  - vuejs
  - bootstrap
+ - tippy
 ---
 <!DOCTYPE html>
 <html>
   <head>
     {% include html-head.html %}
+    <style>
+      [marked] {background-color: green !important;}
+      table {cursor:pointer}
+    </style>
   </head>
   <body>
     {% include navbar-preview.html %}
 
     <div id="vue-app" class="container-fluid" v-cloak>
-      <h1>Country Statistics</h1>
+      <div class="d-flex flex-row justify-content-between align-items-center">
+        <h1>Country Statistics</h1>
+        <button class="btn btn-outline-primary" disabled><i class="fas fa-file-csv"></i> Download Data</button>
+      </div>
       <table class="table table-sm table-hover">
         <thead>
           <tr>
             <th>Country</th>
             <th>World Bank Region</th>
             <th>Education Status</th>
-            <th>Education Modality</th>
             <th>Teacher Vaccinations Prioritized</th>
             <th>Vaccines Authorized <span class="badge bg-secondary rounded-pill" style="opacity: 0.5" title="Courtesy of Our World In Data"><i class="fas fa-info"></i></span></th>
-            <th>In-Person Education Supports</th>
-            <th>Remote Education Supports</th>
-            <th>Last Updated</th>
+            <th>In-Person Supports</th>
+            <th>Remote Supports</th>
+            <th>Updated</th>
           </tr>
         </thead>
         <tbody>
@@ -33,41 +40,35 @@ libraries:
             <td>${ country.fields.countryName}</td>
             <td>${ country.fields.wbRegion}</td>
             <td>
-              <span class="badge bg-success" v-if="country.fields.mostRecentEducationStatusCode && (country.fields.mostRecentEducationStatusCode.includes('2') || country.fields.mostRecentEducationStatusCode.includes('3') || country.fields.mostRecentEducationStatusCode.includes('4'))" title="Education services available"><i class="fas fa-check"></i></span>
-              <span class="badge bg-secondary" v-else-if="country.fields.mostRecentExtendedBreakCode && country.fields.mostRecentExtendedBreakCode.includes('1')" title="On extended break"><i class="fas fa-umbrella-beach"></i></span>
-              <span class="badge bg-danger" v-else-if="country.fields.mostRecentEducationStatusCode && country.fields.mostRecentEducationStatusCode.includes('1')" title="Education services unavailable"><i class="fas fa-times"></i></span>
+              <span class="badge bg-secondary" v-if="country.educationServices.includes('extendedBreak')" title="On extended break"><i class="fas fa-umbrella-beach"></i></span>
+              <span class="badge bg-danger" v-if="country.educationServices.includes('covidClosed')" title="Closed due to COVID-19"><i class="fas fa-times"></i></span>
+              <span class="badge bg-secondary" v-if="country.educationServices.includes('remote')" title="Remote"><i class="fas fa-home"></i></span>
+              <span class="badge bg-info" v-if="country.educationServices.includes('hybrid')" title="Hybrid"><i class="fas fa-school"></i> + <i class="fas fa-home"></i></span>
+              <span class="badge bg-dark" v-if="country.educationServices.includes('inPerson')" title="In-person"><i class="fas fa-school"></i></span>
             </td>
-            <td v-if="country.fields.mostRecentEducationStatusCode">
-              <span class="badge bg-danger" v-if="country.fields.mostRecentEducationStatusCode.includes('1')" title="No education services"><i class="fas fa-times"></i></span>
-              <span class="badge bg-secondary" v-if="country.fields.mostRecentEducationStatusCode.includes('2')" title="Remote"><i class="fas fa-home"></i></span>
-              <span class="badge bg-info" v-if="country.fields.mostRecentEducationStatusCode.includes('3')" title="Hybrid"><i class="fas fa-school"></i> + <i class="fas fa-home"></i></span>
-              <span class="badge bg-dark" v-if="country.fields.mostRecentEducationStatusCode.includes('4')" title="In-person"><i class="fas fa-school"></i></span>
-              <span class="badge bg-warning" v-if="country.fields.mostRecentEducationStatusCode.includes('5')" title="Other">Other</span>
-            </td>
-            <td v-else></td>
             <td v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode">
-              <span class="badge bg-success" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('1')" title="Yes"><i class="fas fa-check"></i></span>
-              <span class="badge bg-danger" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('2')" title="No"><i class="fas fa-times"></i></span>
-              <span class="badge bg-info" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('3')">Other</span>
-              <span class="badge bg-secondary" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('4')">Unknown</span>
+              <span class="badge bg-success" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('1')" title="Teachers are currently being vaccinated as a priority group"><i class="fas fa-check"></i></span>
+              <span class="badge bg-danger" v-if="country.fields.mostRecentVaccineAvailabilityForTeachersCode.includes('2')" title="Teachers have not been prioritized"><i class="fas fa-times"></i></span>
             </td>
             <td v-else></td>
             <td>
-              <span v-if="country.fields.owidHasVaccine" class="badge bg-success text-center"><i class="fas fa-check"></i></span>
+              <span v-if="country.fields.owidHasVaccine" class="badge bg-success text-center" title="Vaccines have been authorized"><i class="fas fa-check"></i></span>
             </td>
             <td>
-              <table>
+              <span v-if="country.hasInPersonAdditionalSupports" class="badge bg-secondary" v-bind:show-popout="country.fields.iso3166Alpha2Code + '-ips'"><i class="fas fa-eye"></i>&nbsp;&nbsp;View</button></span>
+              <table v-if="country.hasInPersonAdditionalSupports" v-bind:id="country.fields.iso3166Alpha2Code + '-ips'" class="hidden">
                 <tr v-for="field in mostRecentInPersonAdditionalSupportFields" v-if="country.fields[field.name] && !country.fields[field.name].includes('7') && !country.fields[field.name].includes('8')">
-                  <td><small class="text-muted">${field.text}</small></td>
-                  <td><span class="badge bg-info mx-1" v-for="supportType in mostRecentInPersonAdditionalSupportTypes" v-if="country.fields[field.name].includes(supportType.value)" v-bind:title="supportType.title"><i v-bind:class="'fas fa-' + supportType.faIcon"></i></span></td>
+                  <td><small class="">${field.text}</small></td>
+                  <td><span class="badge bg-dark mx-1" v-for="supportType in mostRecentInPersonAdditionalSupportTypes" v-bind:marked="country.fields[field.name].includes(supportType.value)" v-bind:title="supportType.title"><i v-bind:class="'fas fa-' + supportType.faIcon"></i></span></td>
                 </tr>
               </table>
             </td>
             <td>
-              <table>
+              <span v-if="country.hasRemoteEducationModalities" class="badge bg-secondary" show-popout><i class="fas fa-eye"></i>&nbsp;&nbsp;View</button></span>
+              <table v-if="country.hasRemoteEducationModalities" class="hidden">
                 <tr v-for="field in mostRecentRemoteEducationModalityFields" v-if="country.fields[field.name] && !country.fields[field.name].includes('6') && !country.fields[field.name].includes('7')">
-                  <td><small class="text-muted">${field.text}</small></td>
-                  <td><span class="badge bg-info mx-1" v-for="modalityType in mostRecentRemoteEducationModalityTypes" v-if="country.fields[field.name].includes(modalityType.value)" v-bind:title="modalityType.title"><i v-bind:class="'fas fa-' + modalityType.faIcon"></i></span></td>
+                  <td><small>${field.text}</small></td>
+                  <td><span class="badge bg-dark mx-1" v-for="modalityType in mostRecentRemoteEducationModalityTypes" v-bind:marked="country.fields[field.name].includes(modalityType.value)" v-bind:title="modalityType.title"><i v-bind:class="'fas fa-' + modalityType.faIcon"></i></span></td>
                 </tr>  
               </table>
             </td>
@@ -79,6 +80,30 @@ libraries:
 
 
     <script>
+
+      var vm;
+
+      const initTippy = () => {
+        tippy('[title]', {
+          placement: 'top',
+          onShow(instance) {
+            instance.setContent(instance.reference.title);
+          }
+        });
+        tippy('[show-popout]', {
+          placement: 'bottom',
+          allowHTML: true,
+          interactive: true,
+          onShow(instance) {
+            const clone = (instance.reference.nextElementSibling.innerHTML);
+            instance.setContent('<table>' + clone + '</table>');
+          }
+        });
+      }
+
+      const csvFieldMapping = [
+        {jsonField: '', csvField: ''}
+      ]
 
       const mostRecentInPersonAdditionalSupportFields = [
         {name: 'mostRecentInPersonAdditionalSupportPrePrimary', text: 'Pre-Primary'},
@@ -110,10 +135,31 @@ libraries:
         {value: '5', title: 'Take-home packages', faIcon: 'paperclip'},
         {value: '8', title: 'Tutoring', faIcon: 'chalkboard-teacher'}
       ]
+
       const prepareCountriesData = (countries) => {
         countries.sort((country1, country2) => {
           return country1.fields.countryName.localeCompare(country2.fields.countryName)
         });
+
+        for (country of countries) {
+          country.educationServices = [];
+          if (country.fields.mostRecentExtendedBreakCode && country.fields.mostRecentExtendedBreakCode.includes('1')) {
+            country.educationServices.push('extendedBreak');
+          } else if (country.fields.mostRecentEducationStatusCode) {
+            if (country.fields.mostRecentEducationStatusCode.includes('1')) {country.educationServices.push('covidClosed')}
+            if (country.fields.mostRecentEducationStatusCode.includes('2')) {country.educationServices.push('remote')}
+            if (country.fields.mostRecentEducationStatusCode.includes('3')) {country.educationServices.push('hybrid')}
+            if (country.fields.mostRecentEducationStatusCode.includes('4')) {country.educationServices.push('inPerson')}
+          }
+
+          country.hasInPersonAdditionalSupports = mostRecentInPersonAdditionalSupportFields.reduce((flag, item) => {
+            if (country.fields[item.name] && !country.fields[item.name].includes('7') && !country.fields[item.name].includes('8')) return true;
+          }, false)
+
+          country.hasRemoteEducationModalities = mostRecentRemoteEducationModalityFields.reduce((flag, item) => {
+            if (country.fields[item.name] && !country.fields[item.name].includes('6') && !country.fields[item.name].includes('7')) return true;
+          }, false)
+        }
         return countries
       }
 
@@ -136,12 +182,16 @@ libraries:
                 return null
               }
             }
+          },
+          mounted: () => {
+            initTippy();
           }
         });
       }
 
       // if we have a token, use it to call the api, otherwise redirect to login screen
-      const dataSource = 'https://jhu-education-dashboard-beta.herokuapp.com/countries';
+      const dataSource = '/global.json'
+      // const dataSource = 'https://jhu-education-dashboard-beta.herokuapp.com/countries';
       if (JwtManager.token) {
         fetch(dataSource, {headers: {'Authorization': `Bearer ${JwtManager.token}`}})
           .then(response => {
