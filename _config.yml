@@ -2,6 +2,9 @@ port: 4002
 
 title: "COVID-19 Global Education Recovery Tracker"
 
+exclude: 
+ - _to_be_deleted
+
 webrick:
   headers:
     access-control-allow-origin: "*"
