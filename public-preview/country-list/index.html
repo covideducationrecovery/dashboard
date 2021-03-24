@@ -20,6 +20,7 @@ libraries:
     <div id="vue-app" class="container-fluid" v-cloak>
       <div class="d-flex flex-row justify-content-between align-items-center">
         <h1>Country Statistics</h1>
+        <span>Lastest Update: ${mostRecentResponseDate | iso8601ToLocaleDateString}</span>
         <button class="btn btn-outline-primary" disabled><i class="fas fa-file-csv"></i> Download Data</button>
       </div>
       <table class="table table-sm table-hover">
@@ -136,11 +137,12 @@ libraries:
         {value: '8', title: 'Tutoring', faIcon: 'chalkboard-teacher'}
       ]
 
-      const prepareCountriesData = (countries) => {
+      const prepareData = (countries) => {
         countries.sort((country1, country2) => {
           return country1.fields.countryName.localeCompare(country2.fields.countryName)
         });
 
+        mostRecentResponseDate = new Date('2021-01-24')
         for (country of countries) {
           country.educationServices = [];
           if (country.fields.mostRecentExtendedBreakCode && country.fields.mostRecentExtendedBreakCode.includes('1')) {
@@ -159,20 +161,27 @@ libraries:
           country.hasRemoteEducationModalities = mostRecentRemoteEducationModalityFields.reduce((flag, item) => {
             if (country.fields[item.name] && !country.fields[item.name].includes('6') && !country.fields[item.name].includes('7')) return true;
           }, false)
+
+          if (country.fields.mostRecentResponseDate) {
+            responseDate = new Date(country.fields.mostRecentResponseDate);
+            console.log(responseDate);
+            if (responseDate.getTime() > mostRecentResponseDate.getTime()) {mostRecentResponseDate = responseDate}
+          }
         }
-        return countries
+        return {
+            countries: countries,
+            mostRecentResponseDate: mostRecentResponseDate,
+            mostRecentInPersonAdditionalSupportFields: mostRecentInPersonAdditionalSupportFields,
+            mostRecentInPersonAdditionalSupportTypes: mostRecentInPersonAdditionalSupportTypes,
+            mostRecentRemoteEducationModalityFields: mostRecentRemoteEducationModalityFields,
+            mostRecentRemoteEducationModalityTypes: mostRecentRemoteEducationModalityTypes
+        }
       }
 
       const renderData = (data) => {
         vm = new Vue({
           el: '#vue-app',
-          data: {
-            countries: prepareCountriesData(data),
-            mostRecentInPersonAdditionalSupportFields: mostRecentInPersonAdditionalSupportFields,
-            mostRecentInPersonAdditionalSupportTypes: mostRecentInPersonAdditionalSupportTypes,
-            mostRecentRemoteEducationModalityFields: mostRecentRemoteEducationModalityFields,
-            mostRecentRemoteEducationModalityTypes: mostRecentRemoteEducationModalityTypes
-          },
+          data: prepareData(data),
           delimiters: ['${','}'],  // need to use these because jekyll competes for {{ and }}
           filters: {
             iso8601ToLocaleDateString: (value) => {
