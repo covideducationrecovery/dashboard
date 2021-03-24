@@ -20,15 +20,15 @@ libraries:
     <div id="vue-app" class="container-fluid" v-cloak>
       <div class="d-flex flex-row justify-content-between align-items-center">
         <h1>Country Statistics</h1>
-        <span>Lastest Update: ${mostRecentResponseDate | iso8601ToLocaleDateString}</span>
-        <button class="btn btn-outline-primary" disabled><i class="fas fa-file-csv"></i> Download Data</button>
+        <span>Latest Update: ${mostRecentResponseDate | iso8601ToLocaleDateString}</span>
+        <a class="btn btn-outline-primary" download href="/global.csv"><i class="fas fa-file-csv"></i> Download Data</a>
       </div>
       <table class="table table-sm table-hover">
         <thead>
           <tr>
             <th>Country</th>
             <th>World Bank Region</th>
-            <th>Education Status</th>
+            <th>School Status / Education Modality</th>
             <th>Teacher Vaccinations Prioritized</th>
             <th>Vaccines Authorized <span class="badge bg-secondary rounded-pill" style="opacity: 0.5" title="Courtesy of Our World In Data"><i class="fas fa-info"></i></span></th>
             <th>In-Person Supports</th>

@@ -13,11 +13,13 @@ libraries:
       {% include worldmap.css %}
       .worldmap {max-width: 90vw; fill: lightgrey;}
 
+
       #map2 {fill: darkgray;}
 
       .carousel .carousel-item {
         height: 80vh;
         }
+
       .footer {
         position: absolute;
         bottom: 0;
@@ -39,28 +41,28 @@ libraries:
       {% include navbar-preview.html %}
       <div class="container-fluid">
         <div id="main-carousel" class="carousel slide" data-bs-ride="carousel" style="max-height: 80vh;">
-          <div class="carousel-indicators">
+          <!-- <div class="carousel-indicators">
             <button type="button" data-bs-target="#main-carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-          </div>
+          </div> -->
           <div class="carousel-inner" style="background-color: #494949;">
             <div class="carousel-item text-center active">
               <img src="/img/wb_shutterstock_1893399223.jpg" class="img-fluid d-block" alt="...">
-              <div class="carousel-caption d-none d-md-block">
+              <div class="carousel-caption d-none d-md-block text-dark bg-light">
                 <h2>COVID-19 Global Education Recovery Tracker </h2>
                 <p>Monitoring both the impact of the COVID-19 pandemic on response and recovery for students across the globe.</p>
-                <button type="button" class="btn btn-primary">Learn more</button>
-                <button type="button" class="btn btn-primary">See our dashboards</button>
+                <a class="btn btn-primary" href="#">Read the press release</a>
+                <a class="btn btn-primary" href="maps">See our maps</a>
               </div>
             </div>
           </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#main-carousel"  data-bs-slide="prev">
+          <!-- <button class="carousel-control-prev" type="button" data-bs-target="#main-carousel"  data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
           </button>
           <button class="carousel-control-next" type="button" data-bs-target="#main-carousel"  data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
-          </button>
+          </button> -->
         </div>
       </div>
     </div>
@@ -72,7 +74,7 @@ libraries:
       </div>
     </section>
     <section id="logos">
-      <img src="/img/eSchoolPlus-Blue.svg" style="transform: translate(0, 0.5em)">
+      <img src="/img/eSchoolPlus-Blue.svg">
       <img src="/img/World_Bank_Group_logo.svg">
       <img src="/img/UNICEF_Logo.svg">
     </section>
