@@ -9,10 +9,10 @@
     <script src="/js/vue.min.js" type="text/javascript"></script>
 
     <script>
-      {% include utils.js %}
+      {% include global-tracker/utils.js %}
     </script>
     <style>
-      {% include worldmap.css %}
+      {% include global-tracker/worldmap.css %}
       html, body {font-family: sans-serif;}
       .hidden {display: none}
       #svg-worldmap {fill: #FFFFFF00; stroke: #FFFFFF00;}
@@ -22,7 +22,7 @@
   </head>
   <body>
     <div id="vue-app">
-      {% include worldmap-no-titles.svg %}
+      {% include global-tracker/worldmap-no-titles.svg %}
 
       <div id="maphover" class="hidden">
         <div v-if="selectedCountry">
