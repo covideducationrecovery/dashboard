@@ -26,6 +26,9 @@
       #header div.banner-alert button {background-color: #FFC107; border-color: #FFC107; color: #212529; text-align: center; border: 1px solid transparent; }
       #header div.hidden {display:none;}
 
+      #round-selector div {margin: 0.5rem; font-size: larger;}
+      #round-selector div select {font-size: large;}
+
       .countries {display: flex; flex-flow: row wrap;}
       .countries input[type="checkbox"] {display: none;}
 
@@ -105,13 +108,11 @@
           <div>
             <h2>Survey Response Dashboard</h2>
             <p>
-              <select onchange="vm.$data.currentSurveyRoundIndex = this.selectedIndex">
-                <option v-for="(surveyRound, index) in surveyRounds" v-bind:selected="(index === currentSurveyRoundIndex)">
-                  ${surveyRound.startDate | renderUTCDate} to ${surveyRound.endDate | renderUTCDate}
-                </option>
-              </select>
               Global <span x-target="countries-assigned"></span> (excludes unassigned countries)
             </p>  
+            <p>
+              <a href="https://dataviz.worldbank.org/t/EdStats/views/dataviz_gert/dsh_gert?:iid=2&:isGuestRedirectFromVizportal=y&:embed=y" target="_blank">View response validity analysis <i class="fas fa-external-link-square-alt"></i></a>
+            </p>
           </div>
           <div>
             <p>
@@ -126,6 +127,16 @@
           <p>NOTE: If you have just submitted a survey response, it may take a few minutes to be reflected on this page.</p>
           <button onclick="this.parentNode.classList.add('hidden')">Dismiss</button>
         </div>  
+      </section>
+      <section id="round-selector" class="text-center">
+        <div>
+          Select round: 
+          <select onchange="vm.$data.currentSurveyRoundIndex = this.selectedIndex">
+            <option v-for="(surveyRound, index) in surveyRounds" v-bind:selected="(index === currentSurveyRoundIndex)">
+              ${surveyRound.startDate | renderUTCDate} to ${surveyRound.endDate | renderUTCDate}
+            </option>
+          </select>  
+        </div>
       </section>
       <section id="map" class="text-center">
         <div>
