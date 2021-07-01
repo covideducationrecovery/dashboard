@@ -17,7 +17,7 @@
 
     <title>Response Dashboard Login</title>
     <script type="text/javascript">
-      {% include global-tracker/utils.js %}
+      {% include utils.js %}
     </script>
     <style>
       * {font-family: sans-serif;}
@@ -69,7 +69,7 @@
         document.getElementById('login').innerHTML = '<div><i class="fas fa-spinner fa-3x loading-spinner"></i><div>';
         document.querySelector('#login div').classList.add('loading-spinner');
         const authorizationHeaderValue = `Basic ${btoa(`${identity}:${password}`)}`
-        fetch('https://jhu-education-dashboard-beta.herokuapp.com/authenticate', {headers: {'Authorization': authorizationHeaderValue}})
+        fetch('https://api.covideducationrecovery.global/authenticate', {headers: {'Authorization': authorizationHeaderValue}})
           .then(response => {
             if (response.ok) {
               response.json()

@@ -4,18 +4,522 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coming Soon</title>
+    <meta name="robots" content="noindex">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <title>Global Survey Response Dashboard</title>
     <style>
-      html, body, div {height: 100%; padding: 0; margin: 0;}
-      body {background: #E0E0E0;}
-      div {display: flex; justify-content: center; align-items: center;}
-      /* svg {border-radius: 10px; width: 90%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);} */
-      {% include global-tracker/worldmap.css %}
+      * {margin: 0; padding: 0;}
+      html, body {border-collapse:collapse;}
+      body {background: white; font-family: sans-serif;}
+      a {text-decoration: none;}
+      ul {list-style: none; padding-left: 0;}
+      .sticky {position: sticky; top: 0; z-index: 100;}
+
+      #header {border-bottom: 1px solid black; box-shadow: 0px 0.1rem 0.5rem grey}
+      #header div {background-color: white; display: flex; flex-flow: row wrap; justify-content: space-between; align-items: baseline; padding: 0.25rem;}
+      #header div div {display: flex; flex-flow: column nowrap; white-space:no-wrap; overflow:hidden;}
+
+      #header div.banner-alert {background-color: #fff3cf; color: #856404; display: flex; flex-flow: row nowrap;}
+      #header div.banner-alert button {background-color: #FFC107; border-color: #FFC107; color: #212529; text-align: center; border: 1px solid transparent; }
+      #header div.hidden {display:none;}
+
+      #round-selector div {margin: 0.5rem; font-size: larger;}
+      #round-selector div select {font-size: large;}
+
+      .countries {display: flex; flex-flow: row wrap;}
+      .countries input[type="checkbox"] {display: none;}
+
+      .responsible-organization {border: 0.5rem solid; margin: 1rem 1rem 2rem 1rem;}
+      .responsible-organization h3 {padding: 0.5rem; top: 0px; position: sticky; z-index: 99;}
+      .list-JHU {border-color: #A15A95;}
+      .list-JHU h3, .list-JHU h4 {background-color: #A15A95; color: white;}
+      .list-UNICEF {border-color: #1cabe2}
+      .list-UNICEF h3, .list-UNICEF h4 {background-color: #1cabe2; color: white;}
+      .list-WB {border-color: #002244}
+      .list-WB h3, .list-WB h4 {background-color: #002244; color: white;}
+      .list-unassigned {border-color: #E6E6E6;}
+      .list-unassigned h3, .list-unassigned h4 {background-color: #E6E6E6; color: black;}
+      .region h4 {padding: 0.6rem; opacity: 0.75;}
+
+      .country {margin: 0.5rem; width: 35ch;}
+      .country input[type="checkbox"] ~ label div {display: block; background-color: lightgrey; padding: 0.2rem; transition: 0.25s linear;}
+      .country input[type="checkbox"]:checked ~ label div {background-color: #719949; transition: 0.25s linear;}
+
+      .country div p {font-size: large; margin-top: 0.3rem;}
+      .country div p.smaller {font-size: smaller; margin-top: 0.3rem}
+      .country a {background-color: #002D72; color: white; display: block; padding: 0.75rem; margin: 0.25rem; border-radius: 5px; font-size: smaller; transition: 0.25s linear;}
+      .country a:hover {background-color: #68ACE5; transition: 0.25s linear;}
+      .country a:not([href]) {background-color: darkgray; color: gray}
+      .country a i {padding-right: 5px;}
+
+      .loading-cover {height: 100vh; display: flex; flex-flow: column nowrap; justify-content: center; align-items: center;}
+      .loading-cover div {padding: 2rem;}
+      .loading-spinner {animation: infinite-rotate 2s linear infinite;}
+
+      .text-center {text-align: center;}
+
+      {% include worldmap.css %}
+      #svg-worldmap {max-width: 1024px; margin: auto; fill: lightgrey; transition: 0.25s linear;}
+      .has-response {fill: #719949; transition: 0.25s linear;}
+
+
+      .hidden, [v-cloak] {display: none;}
+
+      [x-target]:before {content: '- '}
+      [x-target]:empty:before {content: ''}
+
+      @keyframes infinite-rotate {
+        from { transform: rotate(0deg) }
+        to { transform: rotate(360deg) }
+      }
+
+      @media (min-width: 600px) and (min-height: 600px) {
+        #header {position: sticky; top: 0; z-index: 100}
+        .responsible-organization h3 {top: 60px;}
+      }
+
     </style>
+    <script type="text/javascript">
+      {% include utils.js %}
+    </script>
+    {% if site.safe == true %}
+    <script src="/js/vue.min.js" type="text/javascript"></script>
+    <link href="/css/all.min.css" rel="stylesheet">
+    {% else %}
+    <script src="/js/vue.js" type="text/javascript"></script>
+    <link href="/css/all.css" rel="stylesheet">
+    {% endif %}
   </head>
   <body>
-    <div>
-      {% include global-tracker/worldmap-no-titles.svg %}
+    <div id="loading" class="loading-cover">
+      <div class="loading-spinner">
+        <i class="fas fa-spinner fa-3x loading-spinner"></i>
+      </div>
+      <div>
+        Loading... This may take up to 30 seconds.
+      </div>
     </div>
+    <div id="vue-app" v-cloak>
+      <section id="header">
+        <div>
+          <div>
+            <h2>Survey Response Dashboard</h2>
+            <p>
+              Global <span x-target="countries-assigned"></span> (excludes unassigned countries)
+            </p>  
+            <p>
+              <a href="https://dataviz.worldbank.org/t/EdStats/views/dataviz_gert/dsh_gert?:iid=2&:isGuestRedirectFromVizportal=y&:embed=y" target="_blank">View response validity analysis <i class="fas fa-external-link-square-alt"></i></a>
+            </p>
+          </div>
+          <div>
+            <p>
+              <a href="/assets/survey-current.pdf" target="_blank">View survey questions <i class="fas fa-file-pdf"></i></a>  
+            </p>
+            <p>
+              To submit a response, scroll down to find the country.
+            </p>
+          </div>
+        </div>
+        <div class="banner-alert" v-bind:class="{hidden: !cameFromQualtrics}">
+          <p>NOTE: If you have just submitted a survey response, it may take a few minutes to be reflected on this page.</p>
+          <button onclick="this.parentNode.classList.add('hidden')">Dismiss</button>
+        </div>  
+      </section>
+      <section id="round-selector" class="text-center">
+        <div>
+          Select round: 
+          <select onchange="vm.$data.currentSurveyRoundIndex = this.selectedIndex">
+            <option v-for="(surveyRound, index) in surveyRounds" v-bind:selected="(index === currentSurveyRoundIndex)">
+              ${surveyRound.startDate | renderUTCDate} to ${surveyRound.endDate | renderUTCDate}
+            </option>
+          </select>  
+        </div>
+      </section>
+      <section id="map" class="text-center">
+        <div>
+          {% include worldmap-no-titles.svg %}
+        </div>  
+      </section>
+      <section id="countries">
+        <ul id="countries-assigned">
+          <li v-for="responsibleOrganization in responsibleOrganizations" v-if="responsibleOrganization != 'unassigned'">
+            <div class="responsible-organization" v-bind:class="('list-' + responsibleOrganization)">
+              <h3>
+                ${responsibleOrganization}
+                <span v-bind:x-target="('list-' + responsibleOrganization)" class="responsible-organization-metric hidden"></span>
+              </h3>
+              <ul v-bind:id="('list-' + responsibleOrganization)">
+                <li v-for="wbRegion in wbRegions" class="region">
+                  <h4>
+                    ${wbRegion.wbRegion} (${wbRegion.wbRegionCode}) 
+                    <span v-bind:x-target="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)"></span>
+                  </h4>
+                  <ul class="countries" v-bind:id="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)">
+                    <li v-for="country in filterCountries(countries, responsibleOrganization, wbRegion.wbRegionCode)" class="country">
+                      <input v-bind:id="('country-' + country.fields.iso3166Alpha2Code)" type="checkbox" v-bind:checked="country.hasCurrentRoundResponse" disabled />
+                      <label v-bind:for="('country-' + country.fields.iso3166Alpha2Code)">
+                        <div>
+                          <div>
+                            <p>
+                              <i v-if="country.hasCurrentRoundResponse" class="fas fa-check"></i>
+                              <i v-else class="fas fa-times"></i> 
+                              ${country.fields.countryName}
+                            </p>
+                            <p v-if="country.hasCurrentRoundResponse" class="smaller">
+                              Response received ${new Date(country.fields.responseDates[country.currentRoundResponseIndex]).toLocaleDateString()}
+                            </p>
+                            <p v-else class="smaller">
+                              No response for this round
+                            </p>
+
+                          </div>
+                          <div v-if="country.hasCurrentRoundResponse">
+                            <a v-bind:href="country | previewResponseUrl" target="_blank"><i class="fas fa-file"></i>View this response</a>
+                            <a v-bind:href="country | retakeCurrentResponseUrl" target="_blank"><i class="fas fa-undo"></i>Change this response</a>
+                          </div>
+                          <div v-else>
+                            <a v-bind:href="country | newResponseWithMostRecentAnswersUrl" target="_blank"><i class="fas fa-play"></i>New response with previous answers</a>
+                            <a v-bind:href="country | newResponseBlankUrl" target="_blank"><i class="fas fa-plus"></i>New blank response</a>  
+                          </div>
+                        </div>
+                      </label>
+                    </li>          
+                  </ul>                 
+                </li>
+              </ul>              
+            </div>
+          </li>
+        </ul>
+        <ul id="countries-unassigned">
+          <li v-for="responsibleOrganization in responsibleOrganizations" v-if="responsibleOrganization === 'unassigned'">
+            <div class="responsible-organization" v-bind:class="('list-' + responsibleOrganization)">
+              <h3>
+                ${responsibleOrganization}
+              </h3>
+              <ul v-bind:id="('list-' + responsibleOrganization)">
+                <li v-for="wbRegion in wbRegions" class="region">
+                  <h4>
+                    ${wbRegion.wbRegion} (${wbRegion.wbRegionCode}) 
+                  </h4>
+                  <ul class="countries" v-bind:id="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)">
+                    <li v-for="country in filterCountries(countries, responsibleOrganization, wbRegion.wbRegionCode)" class="country">
+                      <input v-bind:id="('country-' + country.fields.iso3166Alpha2Code)" type="checkbox" v-bind:checked="country.hasCurrentRoundResponse" disabled />
+                      <label v-bind:for="('country-' + country.fields.iso3166Alpha2Code)">
+                        <div>
+                          <div>
+                            <p>
+                              <i v-if="country.hasCurrentRoundResponse" class="fas fa-check"></i>
+                              <i v-else class="fas fa-times"></i> 
+                              ${country.fields.countryName}
+                            </p>
+                            <p v-if="country.hasCurrentRoundResponse" class="smaller">
+                              Response received ${new Date(country.fields.responseDates[country.currentRoundResponseIndex]).toLocaleDateString()}
+                            </p>
+                            <p v-else class="smaller">
+                              No response for this round
+                            </p>
+
+                          </div>
+                          <div v-if="country.hasCurrentRoundResponse">
+                            <a v-bind:href="country | previewResponseUrl" target="_blank"><i class="fas fa-file"></i>View this response</a>
+                            <a v-bind:href="country | retakeCurrentResponseUrl" target="_blank"><i class="fas fa-undo"></i>Change this response</a>
+                          </div>
+                          <div v-else>
+                            <a v-bind:href="country | newResponseWithMostRecentAnswersUrl" target="_blank"><i class="fas fa-play"></i>New response with previous answers</a>
+                            <a v-bind:href="country | newResponseBlankUrl" target="_blank"><i class="fas fa-plus"></i>New blank response</a>  
+                          </div>
+                        </div>
+                      </label>
+                    </li>          
+                  </ul>                 
+                </li>
+              </ul>              
+            </div>
+          </li>
+        </ul>  
+      </section>
+      <section id="footer">
+        <div class="text-center">
+          <input type="checkbox" id="show-responsible-organization-metrics" onchange="document.querySelectorAll('.responsible-organization-metric').forEach((node) => {node.classList.toggle('hidden')})">
+          <label for="show-responsible-organization-metrics">Show counts for organizations</label> -
+          <a v-bind:href="null | newResponseBlankPracticeUrl" target="_blank">Submit a practice survey response</a> -
+          Version 1.3 - 
+          <a href="/login">Log out <i class="fas fa-sign-out-alt"></i></a>
+          <br /><br />
+        </div>
+      </section>
+    </div>
+  
+    <script>
+
+      var surveyBaseUrl = "https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR"
+
+      // extracts the unique list of organizations from countries data, and sets up an unassigned group for blank values
+      const getResponsibleOrganizations = (countries) => {
+        const responsibleOrganizations = new Set();
+        for (country of countries) {
+          if (country.fields.responsibleOrganization) {
+            responsibleOrganizations.add(country.fields.responsibleOrganization);
+          } else {
+            responsibleOrganizations.add('unassigned');
+          }
+        }
+        return Array.from(responsibleOrganizations).sort();
+      }
+
+      // extracts the unique list of world bank regions from the countries data.
+      const getWorldBankRegions = (countries) => {
+        const worldBankRegions = new Map();
+        for (country of countries) {
+          worldBankRegions.set(country.fields.wbRegion, {wbRegionCode: country.fields.wbRegionCode, wbRegion: country.fields.wbRegion})
+        }
+        return Array.from(worldBankRegions.values()).sort((region1, region2) => {
+          return region1.wbRegion.localeCompare(region2.wbRegion);
+        });
+      }
+
+      // the counts on this page are hacky, not driven by data but instead by UI elements, though this does
+      // allow for different country groupings if desired. Elements expected to contain a count have an x-target
+      // attribute set to the ID of the element which has the checkboxes to be counted. If no checkboxes are found,
+      // nothing will be displayed. This function updates _all_ elements with the x-target attribute.
+      const updateListCounts = () => {
+        [...document.querySelectorAll('[x-target]')].forEach((node) => {
+          const xTarget = document.getElementById(node.attributes['x-target'].value);
+          if (xTarget) {
+            const totalCount = xTarget.querySelectorAll('li input[type="checkbox"]').length;
+            const checkedCount = xTarget.querySelectorAll('li input[type="checkbox"]:checked').length;
+            if (totalCount + checkedCount > 0) {
+              node.innerHTML = Math.round(checkedCount/totalCount*100) + '% (' + checkedCount + ' of ' + totalCount + ') complete';
+            }
+          }
+        })
+      }
+
+      // the map update is hacky, not driven by data but instead by UI elements
+      const updateMap = () => {
+        const worldMap = document.getElementById('svg-worldmap');
+
+        if (worldMap) {
+          //remove the existing 'has-response' class attributes from the map
+          [...worldMap.getElementsByClassName('has-response')].forEach((item) => {
+            item.classList.remove('has-response');
+          });
+
+          //set the 'has-response' class based upon the checked items from the document
+          [...document.querySelectorAll('#countries input[type="checkbox"]:checked')].forEach((item) => {
+            const iso3166Alpha2Code = item.id.split("-").pop().toLowerCase();
+            if (iso3166Alpha2Code) {
+              svgGroup = worldMap.getElementById(iso3166Alpha2Code)
+              if (svgGroup) {
+                svgGroup.classList.add('has-response');
+              }
+            }
+          })
+        }
+      }
+
+      // returns the index of the round with the current date; if there isn't one, return the last one in the list
+      const getCurrentRoundIndex = (surveyRounds) => {
+        const now = Date.now();
+        for (const [index, surveyRound] of surveyRounds.entries()) {
+          if ((now => surveyRound.startDate) && (now < surveyRound.endDate)) {
+            return index
+          }
+        }
+        return surveyRounds.length - 1
+      }
+
+      // sets up additional data values to support simpler & faster rendering
+      const updateCountriesInRound = (countries, surveyRoundIndex, surveyRounds) => {
+        const surveyRound = surveyRounds[surveyRoundIndex];
+        for (country of countries) {
+          country.currentRoundResponseIndex = null;
+          country.hasCurrentRoundResponse = false;
+          if (country.fields.responseDates) {
+            country.fields.responseDates.forEach((responseDate, index) => {
+              if (responseDate >= surveyRound.startDate && responseDate < surveyRound.endDate) {
+                country.currentRoundResponseIndex = index;
+                country.hasCurrentRoundResponse = true;
+              }
+            })
+          }
+        }
+      }
+
+      // replaces all the date values in country.responseDates with the numeric equivalent
+      const convertCountryResponseDates = (countries) => {
+        for (country of countries) {
+          if (country.fields.responseDates) {
+            country.fields.responseDates.forEach((responseDate, i, responseDates) => {
+              responseDates[i] = (Date.parse(responseDate));
+            });
+          }
+        }
+      }
+
+      // this function optimizes the data sent from the API for faster rendering in-browser
+      const prepareData = (fetchResponse) => {
+        const countries = fetchResponse;
+        const vueData = {};
+
+        // sort the country list by country name ascending
+        vueData.countries = countries.sort((country1, country2) => {
+          return country1.fields.countryName.localeCompare(country2.fields.countryName)
+        });
+
+        // convert the dates in the country list to epoch milliseconds
+        convertCountryResponseDates(vueData.countries);
+
+        // create a list of unique world bank regions
+        vueData.wbRegions = getWorldBankRegions(vueData.countries)
+
+        // create a list of unique organizations
+        vueData.responsibleOrganizations = getResponsibleOrganizations(vueData.countries);
+
+        // flag to display a note if the page visited before this one was qualtrics
+        vueData.cameFromQualtrics = document.referrer.toLowerCase().includes('qualtrics');
+
+        // TODO: move this to API / data source
+        vueData.surveyRounds = [
+          {startDate: Date.parse('2021-01-24T00:00:00.000Z'), endDate: Date.parse('2021-02-16T23:59:59.999Z'), roundId: 1},
+          {startDate: Date.parse('2021-02-17T00:00:00.000Z'), endDate: Date.parse('2021-03-04T23:59:59.999Z'), roundId: 2},
+          {startDate: Date.parse('2021-03-05T00:00:00.000Z'), endDate: Date.parse('2021-03-22T23:59:59.999Z'), roundId: 3},
+          {startDate: Date.parse('2021-03-23T00:00:00.000Z'), endDate: Date.parse('2021-04-05T23:59:59.999Z'), roundId: 4},
+          {startDate: Date.parse('2021-04-06T00:00:00.000Z'), endDate: Date.parse('2021-04-19T23:59:59.999Z'), roundId: 5},
+          {startDate: Date.parse('2021-04-20T00:00:00.000Z'), endDate: Date.parse('2021-05-10T23:59:59.999Z'), roundId: 6},
+          {startDate: Date.parse('2021-05-11T00:00:00.000Z'), endDate: Date.parse('2021-05-24T23:59:59.999Z'), roundId: 7},
+          {startDate: Date.parse('2021-05-25T00:00:00.000Z'), endDate: Date.parse('2021-06-07T23:59:59.999Z'), roundId: 8},
+          {startDate: Date.parse('2021-06-08T00:00:00.000Z'), endDate: Date.parse('2021-06-21T23:59:59.999Z'), roundId: 9},
+          {startDate: Date.parse('2021-06-22T00:00:00.000Z'), endDate: Date.parse('2021-07-05T23:59:59.999Z'), roundId: 10}
+        ]
+
+        // select the survey round to display based upon the current date
+        vueData.currentSurveyRoundIndex = getCurrentRoundIndex(vueData.surveyRounds);
+
+        // set display flags and reference indexes within the country data, based upon survey round
+        //   this function is also called each time the dropdown is changed
+        updateCountriesInRound(vueData.countries, vueData.currentSurveyRoundIndex, vueData.surveyRounds);
+
+        return vueData
+      }
+
+      // primary function for the page. Once fetch loads the data, it calls this function to do the rest.
+      const renderData = (countries) => {
+        const data = prepareData(countries);    
+
+        vm = new Vue({
+          el: '#vue-app',
+          data: data,
+          delimiters: ['${','}'],  // need to use these because jekyll competes for {{ and }}
+          methods: {
+            filterCountries: (countries, responsibleOrganization, wbRegionCode) => {
+              return countries.filter((country) => {
+                return (((country.fields.responsibleOrganization || 'unassigned') === responsibleOrganization) && (country.fields.wbRegionCode === wbRegionCode))
+              });
+            }
+          },
+          mounted: () => {
+            updateListCounts();
+            updateMap();
+            document.getElementById('loading').classList.add('hidden');
+          },
+          beforeUpdate: () => {
+            updateCountriesInRound(vm.$data.countries, vm.$data.currentSurveyRoundIndex, vm.$data.surveyRounds);
+          },
+          updated: () => {
+            // these methods require the UX to be rendered, so do it after nextTick();
+            vm.$nextTick(() => {
+              updateListCounts();
+              updateMap();
+            })
+          },
+          filters: {
+            previewResponseUrl: (country) => {
+              if (country.fields.responseLinks && country.hasCurrentRoundResponse) {
+                const responseLink = country.fields.responseLinks[country.currentRoundResponseIndex];
+                if (responseLink && responseLink != '#') {
+                  return responseLink
+                }
+              }
+              return null;
+            },
+            retakeCurrentResponseUrl: (country) => {
+              if (country.fields.responseQualtricsIds && country.hasCurrentRoundResponse) {
+                const qualtricsResponseId = country.fields.responseQualtricsIds[country.currentRoundResponseIndex];
+                return `${surveyBaseUrl}?Q_R=${qualtricsResponseId}&Q_R_DEL=1`
+              } else {
+                return null;
+              }
+            },
+            newResponseWithMostRecentAnswersUrl: (country) => {
+              if (country.fields.responseQualtricsIds) {
+                const mostRecentQualtricsResponseId = [...country.fields.responseQualtricsIds].pop();
+                return `${surveyBaseUrl}?Q_R=${mostRecentQualtricsResponseId}`
+              } else {
+                return null;
+              }
+            },
+            newResponseBlankUrl: (country) => {
+              return `${surveyBaseUrl}?Q_PopulateResponse={"QID30":"${country.fields.qualtricsId}"}`
+            },
+            newResponseBlankPracticeUrl: () => {
+              return `${surveyBaseUrl}?testing=true`
+            },
+            lastResponseAge: (value) => {
+              if (value) {
+                lastDate = new Date(Array.from(value).pop())
+                currentDate = new Date();
+                difference = Math.floor((currentDate - lastDate) / 86400000);
+                if (difference === 1) {
+                  return '1 day ago'
+                } else {
+                  return `${difference} days ago`
+                }
+              }
+              return 'never'
+            },
+            renderUTCDate: (value) => {
+              const thisDate = new Date(value);
+              return `${thisDate.getUTCFullYear().toString()}-${(thisDate.getUTCMonth() + 1).toString().padStart(2, '0')}-${(thisDate.getUTCDate()).toString().padStart(2,'0')}`
+            }
+            
+          }
+        });
+      }
+
+
+      {% if site.safe == true %}
+      const dataSource = 'https://api.covideducationrecovery.global/countries';
+      {% else %}
+      const dataSource = 'https://api.covideducationrecovery.global/countries';
+      {% endif %}
+
+      // if we have a token, use it to call the api, otherwise redirect to login screen
+      if (JwtManager.token) {
+        fetch(dataSource, {headers: {'Authorization': `Bearer ${JwtManager.token}`}})
+          .then(response => {
+            switch (response.status) {
+              case 200:
+                // huzzah we have the data
+                response.json().then(data => renderData(data));
+                break;
+              case 403: 
+                // denied because of invalid token
+                window.location = '/login';
+                break;
+              default:
+            }
+          })
+          .catch(error => {
+            document.getElementById(`loading`).innerText = "Error loading the data. We apologize for the inconvenience; please try again later.";
+            console.error(error);
+          })
+      } else {
+        window.location = '/login';
+      }
+    </script>
   </body>
 </html>

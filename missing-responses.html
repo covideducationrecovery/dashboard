@@ -10,14 +10,14 @@
     <link rel="manifest" href="/site.webmanifest">
     <title>Missing countries</title>
     {% if site.safe == true %}
-    <script src="/global-tracker/js/vue.min.js" type="text/javascript"></script>
-    <link href="/global-tracker/css/all.min.css" rel="stylesheet">
+    <script src="/js/vue.min.js" type="text/javascript"></script>
+    <link href="/css/all.min.css" rel="stylesheet">
     {% else %}
-    <script src="/global-tracker/js/vue.js" type="text/javascript"></script>
-    <link href="/global-tracker/css/all.css" rel="stylesheet">
+    <script src="/js/vue.js" type="text/javascript"></script>
+    <link href="/css/all.css" rel="stylesheet">
     {% endif %}
     <script type="text/javascript">
-      {% include global-tracker/utils.js %}
+      {% include utils.js %}
     </script>
     <style>
       table {border: 1px solid gray;}
@@ -107,9 +107,9 @@
       }
 
       {% if site.safe == true %}
-      const dataSource = 'https://jhu-education-dashboard-beta.herokuapp.com/countries';
+      const dataSource = 'https://api.covideducationrecovery.global/countries';
       {% else %}
-      const dataSource = 'https://jhu-education-dashboard-beta.herokuapp.com/countries';
+      const dataSource = 'https://api.covideducationrecovery.global/countries';
       {% endif %}
 
       // if we have a token, use it to call the api, otherwise redirect to login screen
