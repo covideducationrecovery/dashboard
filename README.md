@@ -1,4 +1,5 @@
-# jhu-wb.equityschool.plus
+# dashboard.covideducationrecovery.global
+This repository hosts the operations dashboard.
 
 
 ## Checklist for modifying Qualtrics Survey
