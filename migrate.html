@@ -11,13 +11,15 @@ permalink: /migrate
       html { overflow: hidden;}
       body { width: 100vw; height: 100vh; display: flex; flex-flow: column nowrap; align-items: center; justify-content: center;}
     </style>
-    <script>
+    <script type="text/javascript">
+
       {% include utils.js %}
+    
       const redirect = () => {
         const search = window.location.search?.slice(1) // remove the '?' from the search string result
         if (search) {
           const redirectInfo = atob(search)
-          jwtManager.set(redirectInfo.token, window[redirectInfo.mode])
+          JwtManager.set(redirectInfo.token, window[redirectInfo.mode])
           window.location = redirectInfo.path || '/'
         } else {
           window.location = "/"
