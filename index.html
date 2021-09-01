@@ -130,12 +130,15 @@
       </section>
       <section id="round-selector" class="text-center">
         <div>
-          Select round: 
+          Select a round to display: 
           <select onchange="vm.$data.currentSurveyRoundIndex = this.selectedIndex">
             <option v-for="(surveyRound, index) in surveyRounds" v-bind:selected="(index === currentSurveyRoundIndex)">
               ${surveyRound.startDate | renderUTCDate} to ${surveyRound.endDate | renderUTCDate}
             </option>
           </select>  
+        </div>
+        <div>
+          <em style="opacity: 50%">Note: selecting a round only affects the information shown below. Survey responses are automatically assigned to a round based upon the time and date they are completed. <br> We use <a href="https://www.timeanddate.com/worldclock/timezone/utc" target="_blank">UTC time</a> for all responses, not your local time zone.</em>
         </div>
       </section>
       <section id="map" class="text-center">
