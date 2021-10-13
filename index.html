@@ -11,77 +11,46 @@
     <link rel="manifest" href="/site.webmanifest">
     <title>Global Survey Response Dashboard</title>
     <style>
-      * {margin: 0; padding: 0;}
-      html, body {border-collapse:collapse;}
-      body {background: white; font-family: sans-serif;}
-      a {text-decoration: none;}
-      ul {list-style: none; padding-left: 0;}
-      .sticky {position: sticky; top: 0; z-index: 100;}
+      :root {
+        --has-response: rgb(121, 150, 116);
+        --no-response: rgb(109, 109, 109);
+        --jhu: #A15A95;
+        --wb: #002244;
+        --unicef: #1CABE2;
+        --bs-primary: #26B1FF;
+      }
 
-      #header {border-bottom: 1px solid black; box-shadow: 0px 0.1rem 0.5rem grey}
-      #header div {background-color: white; display: flex; flex-flow: row wrap; justify-content: space-between; align-items: baseline; padding: 0.25rem;}
-      #header div div {display: flex; flex-flow: column nowrap; white-space:no-wrap; overflow:hidden;}
+      {% include worldmap.css %}
 
-      #header div.banner-alert {background-color: #fff3cf; color: #856404; display: flex; flex-flow: row nowrap;}
-      #header div.banner-alert button {background-color: #FFC107; border-color: #FFC107; color: #212529; text-align: center; border: 1px solid transparent; }
-      #header div.hidden {display:none;}
+      .country-card {width: 25em;}
 
-      #round-selector div {margin: 0.5rem; font-size: larger;}
-      #round-selector div select {font-size: large;}
-
-      .countries {display: flex; flex-flow: row wrap;}
-      .countries input[type="checkbox"] {display: none;}
-
-      .responsible-organization {border: 0.5rem solid; margin: 1rem 1rem 2rem 1rem;}
-      .responsible-organization h3 {padding: 0.5rem; top: 0px; position: sticky; z-index: 99;}
-      .list-JHU {border-color: #A15A95;}
-      .list-JHU h3, .list-JHU h4 {background-color: #A15A95; color: white;}
-      .list-UNICEF {border-color: #1cabe2}
-      .list-UNICEF h3, .list-UNICEF h4 {background-color: #1cabe2; color: white;}
-      .list-WB {border-color: #002244}
-      .list-WB h3, .list-WB h4 {background-color: #002244; color: white;}
-      .list-unassigned {border-color: #E6E6E6;}
-      .list-unassigned h3, .list-unassigned h4 {background-color: #E6E6E6; color: black;}
-      .region h4 {padding: 0.6rem; opacity: 0.75;}
-
-      .country {margin: 0.5rem; width: 35ch;}
-      .country input[type="checkbox"] ~ label div {display: block; background-color: lightgrey; padding: 0.2rem; transition: 0.25s linear;}
-      .country input[type="checkbox"]:checked ~ label div {background-color: #719949; transition: 0.25s linear;}
-
-      .country div p {font-size: large; margin-top: 0.3rem;}
-      .country div p.smaller {font-size: smaller; margin-top: 0.3rem}
-      .country a {background-color: #002D72; color: white; display: block; padding: 0.75rem; margin: 0.25rem; border-radius: 5px; font-size: smaller; transition: 0.25s linear;}
-      .country a:hover {background-color: #68ACE5; transition: 0.25s linear;}
-      .country a:not([href]) {background-color: darkgray; color: gray}
-      .country a i {padding-right: 5px;}
+      #svg-worldmap { max-width: 1024px; margin: auto; fill: var(--no-response); transition: 0.25s linear; }
+      .has-response { fill: var(--has-response); transition: 0.25s linear; }
+      .bg-has-response { background-color: var(--has-response) !important; transition: 0.25s linear; }
+      .bg-no-response { background-color: var(--no-response) !important; transition: 0.25s linear; }
 
       .loading-cover {height: 100vh; display: flex; flex-flow: column nowrap; justify-content: center; align-items: center;}
       .loading-cover div {padding: 2rem;}
       .loading-spinner {animation: infinite-rotate 2s linear infinite;}
 
-      .text-center {text-align: center;}
+      .org-jhu {border: 0.2em solid var(--jhu); background-color: var(--jhu); color: var(--bs-white)}
+      .org-wb {border: 0.2em solid var(--wb); background-color: var(--wb); color: var(--bs-white)}
+      .org-unicef {border: 0.2em solid var(--unicef); background-color: var(--unicef); color: var(--bs-white)}
+      
+      [class^="org-"] > button:hover {background-color: #FFFFFF60; transition: 0.25s linear;}
 
-      {% include worldmap.css %}
-      #svg-worldmap {max-width: 1024px; margin: auto; fill: lightgrey; transition: 0.25s linear;}
-      .has-response {fill: #719949; transition: 0.25s linear;}
 
+      .bg-region { background-color: #FFFFFF60; color: var(--bs-white)}
+      .bg-countries { background-color: var(--bs-white)}
 
-      .hidden, [v-cloak] {display: none;}
+      .progress-label { position: absolute; top: 0; right: 0; bottom: 0; left: 0; color: var(--bs-white);  display: flex; flex-flow: row nowrap; justify-content: center; align-items: center; font-size: 1.5em}
+
 
       [x-target]:before {content: '- '}
       [x-target]:empty:before {content: ''}
-
-      @keyframes infinite-rotate {
-        from { transform: rotate(0deg) }
-        to { transform: rotate(360deg) }
-      }
-
-      @media (min-width: 600px) and (min-height: 600px) {
-        #header {position: sticky; top: 0; z-index: 100}
-        .responsible-organization h3 {top: 60px;}
-      }
-
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>    
     <script type="text/javascript">
       {% include utils.js %}
     </script>
@@ -94,442 +63,503 @@
     {% endif %}
   </head>
   <body>
-    <div id="loading" class="loading-cover">
-      <div class="loading-spinner">
-        <i class="fas fa-spinner fa-3x loading-spinner"></i>
-      </div>
-      <div>
-        Loading... This may take up to 30 seconds.
-      </div>
-    </div>
     <div id="vue-app" v-cloak>
-      <section id="header">
-        <div>
+      <template v-if="errorMessage">
+        <div id="error" class="loading-cover">
           <div>
-            <h2>Survey Response Dashboard</h2>
-            <p>
-              Global <span x-target="countries-assigned"></span> (excludes unassigned countries)
-            </p>  
-            <p>
-              <a href="https://dataviz.worldbank.org/t/EdStats/views/dataviz_gert/dsh_gert?:iid=2&:isGuestRedirectFromVizportal=y&:embed=y" target="_blank">View response validity analysis <i class="fas fa-external-link-square-alt"></i></a>
-            </p>
+            <i class="fas fa-times-circle fa-3x"></i>
           </div>
           <div>
-            <p>
-              <a href="/assets/survey-current.pdf" target="_blank">View survey questions <i class="fas fa-file-pdf"></i></a>  
-            </p>
-            <p>
-              To submit a response, scroll down to find the country.
-            </p>
+            ${ errorMessage }
           </div>
-        </div>
-        <div class="banner-alert" v-bind:class="{hidden: !cameFromQualtrics}">
-          <p>NOTE: If you have just submitted a survey response, it may take a few minutes to be reflected on this page.</p>
-          <button onclick="this.parentNode.classList.add('hidden')">Dismiss</button>
         </div>  
-      </section>
-      <section id="round-selector" class="text-center">
-        <div>
-          Select a round to display: 
-          <select onchange="vm.$data.currentSurveyRoundIndex = this.selectedIndex">
-            <option v-for="(surveyRound, index) in surveyRounds" v-bind:selected="(index === currentSurveyRoundIndex)">
-              ${surveyRound.startDate | renderUTCDate} to ${surveyRound.endDate | renderUTCDate}
-            </option>
-          </select>  
-        </div>
-        <div>
-          <em style="opacity: 50%">Note: selecting a round only affects the information shown below. Survey responses are automatically assigned to a round based upon the time and date they are completed. <br> We use <a href="https://www.timeanddate.com/worldclock/timezone/utc" target="_blank">UTC time</a> for all responses, not your local time zone.</em>
-        </div>
-      </section>
-      <section id="map" class="text-center">
-        <div>
-          {% include worldmap-no-titles.svg %}
+      </template>
+      <template v-else-if="loading" >
+        <div id="loading" class="loading-cover">
+          <div class="loading-spinner">
+            <i class="fas fa-spinner fa-3x loading-spinner"></i>
+          </div>
+          <div>
+            Loading... This may take up to 30 seconds.
+          </div>
         </div>  
-      </section>
-      <section id="countries">
-        <ul id="countries-assigned">
-          <li v-for="responsibleOrganization in responsibleOrganizations" v-if="responsibleOrganization != 'unassigned'">
-            <div class="responsible-organization" v-bind:class="('list-' + responsibleOrganization)">
-              <h3>
-                ${responsibleOrganization}
-                <span v-bind:x-target="('list-' + responsibleOrganization)" class="responsible-organization-metric hidden"></span>
-              </h3>
-              <ul v-bind:id="('list-' + responsibleOrganization)">
-                <li v-for="wbRegion in wbRegions" class="region">
-                  <h4>
-                    ${wbRegion.wbRegion} (${wbRegion.wbRegionCode}) 
-                    <span v-bind:x-target="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)"></span>
-                  </h4>
-                  <ul class="countries" v-bind:id="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)">
-                    <li v-for="country in filterCountries(countries, responsibleOrganization, wbRegion.wbRegionCode)" class="country">
-                      <input v-bind:id="('country-' + country.fields.iso3166Alpha2Code)" type="checkbox" v-bind:checked="country.hasCurrentRoundResponse" disabled />
-                      <label v-bind:for="('country-' + country.fields.iso3166Alpha2Code)">
-                        <div>
-                          <div>
-                            <p>
-                              <i v-if="country.hasCurrentRoundResponse" class="fas fa-check"></i>
-                              <i v-else class="fas fa-times"></i> 
-                              ${country.fields.countryName}
-                            </p>
-                            <p v-if="country.hasCurrentRoundResponse" class="smaller">
-                              Response received ${new Date(country.fields.responseDates[country.currentRoundResponseIndex]).toLocaleDateString()}
-                            </p>
-                            <p v-else class="smaller">
-                              No response for this round
-                            </p>
-
-                          </div>
-                          <div v-if="country.hasCurrentRoundResponse">
-                            <a v-bind:href="country | previewResponseUrl" target="_blank"><i class="fas fa-file"></i>View this response</a>
-                            <a v-bind:href="country | retakeCurrentResponseUrl" target="_blank"><i class="fas fa-undo"></i>Change this response</a>
-                          </div>
-                          <div v-else>
-                            <a v-bind:href="country | newResponseWithMostRecentAnswersUrl" target="_blank"><i class="fas fa-play"></i>New response with previous answers</a>
-                            <a v-bind:href="country | newResponseBlankUrl" target="_blank"><i class="fas fa-plus"></i>New blank response</a>  
-                          </div>
-                        </div>
-                      </label>
-                    </li>          
-                  </ul>                 
-                </li>
-              </ul>              
+      </template>
+      <template v-else>
+        <div class="sticky-md-top bg-white shadow">
+          <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="/">
+                <img src="/android-chrome-192x192.png" width="30" height="24" class="d-inline-block align-text-top">
+                GERT Survey <span class="d-none d-sm-inline">Response</span> Dashboard</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fas fa-tools me-2"></i>Resources
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                      <li><a class="dropdown-item" data-bs-toggle="offcanvas" href="#timeline" role="button" aria-controls="timeline"><i class="fas fa-clock me-2"></i>Data processing timeline</a></li>
+                      <li><a class="dropdown-item" href="/missing-responses" target="_blank"><i class="fas fa-question-circle me-2"></i>Missing responses viewer</a></li>
+                      <li><a class="dropdown-item" href="https://dataviz.worldbank.org/t/EdStats/views/dataviz_gert/dsh_gert?:iid=2&:isGuestRedirectFromVizportal=y&:embed=y" target="_blank"><i class="fas fa-check-double me-2"></i>Response validity analysis</a></li>
+                      <li><a class="dropdown-item" href="/assets/survey-current.pdf" target="_blank"><i class="fas fa-file-pdf me-2"></i>Survey Questions</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="https://www.covideducationrecovery.global/" target="_blank"><i class="fas fa-globe me-2"></i>Public website</a></li>
+                      <li><a class="dropdown-item" href="https://beta.covideducationrecovery.global/" target="_blank"><i class="fas fa-hammer me-2"></i>Beta website</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" v-bind:href="null | newResponseBlankPracticeUrl"><i class="fas fa-clipboard-list me-2"></i>Submit a practice survey response</a></li>
+                    </ul>
+                  </li>
+                  <li class="nav-item dropdown align-self-end">
+                    <a class="nav-link dropdown-toggle" href="#" id="settingsDropDown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="fas fa-cog"></i>
+                      <span class="d-inline d-sm-none">Settings</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropDown">
+                      <li class="dropdown-item">
+                        <input type="checkbox" id="show-responsible-organization-metrics" v-model="showOrganizationCounts" class="me-1">
+                        <label for="show-responsible-organization-metrics">Show organization-level progress</label>            
+                      </li>
+                      <li><a class="dropdown-item" href="/login"><i class="fas fa-sign-out-alt ml-auto me-2" data-bs-toggle="tooltip" title="Log out"></i>Sign out</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li class="dropdown-item disabled">Version 1.5</li>
+                    </li>
+                    </ul>
+                  </li>
+                  </ul>
+              <!-- <ul class="navbar-nav ms-auto">
+                </ul> -->
+              </div>
             </div>
-          </li>
-        </ul>
-        <ul id="countries-unassigned">
-          <li v-for="responsibleOrganization in responsibleOrganizations" v-if="responsibleOrganization === 'unassigned'">
-            <div class="responsible-organization" v-bind:class="('list-' + responsibleOrganization)">
-              <h3>
-                ${responsibleOrganization}
-              </h3>
-              <ul v-bind:id="('list-' + responsibleOrganization)">
-                <li v-for="wbRegion in wbRegions" class="region">
-                  <h4>
-                    ${wbRegion.wbRegion} (${wbRegion.wbRegionCode}) 
-                  </h4>
-                  <ul class="countries" v-bind:id="('list-' + responsibleOrganization + '-' + wbRegion.wbRegionCode)">
-                    <li v-for="country in filterCountries(countries, responsibleOrganization, wbRegion.wbRegionCode)" class="country">
-                      <input v-bind:id="('country-' + country.fields.iso3166Alpha2Code)" type="checkbox" v-bind:checked="country.hasCurrentRoundResponse" disabled />
-                      <label v-bind:for="('country-' + country.fields.iso3166Alpha2Code)">
-                        <div>
-                          <div>
-                            <p>
-                              <i v-if="country.hasCurrentRoundResponse" class="fas fa-check"></i>
-                              <i v-else class="fas fa-times"></i> 
-                              ${country.fields.countryName}
-                            </p>
-                            <p v-if="country.hasCurrentRoundResponse" class="smaller">
-                              Response received ${new Date(country.fields.responseDates[country.currentRoundResponseIndex]).toLocaleDateString()}
-                            </p>
-                            <p v-else class="smaller">
-                              No response for this round
-                            </p>
-
-                          </div>
-                          <div v-if="country.hasCurrentRoundResponse">
-                            <a v-bind:href="country | previewResponseUrl" target="_blank"><i class="fas fa-file"></i>View this response</a>
-                            <a v-bind:href="country | retakeCurrentResponseUrl" target="_blank"><i class="fas fa-undo"></i>Change this response</a>
-                          </div>
-                          <div v-else>
-                            <a v-bind:href="country | newResponseWithMostRecentAnswersUrl" target="_blank"><i class="fas fa-play"></i>New response with previous answers</a>
-                            <a v-bind:href="country | newResponseBlankUrl" target="_blank"><i class="fas fa-plus"></i>New blank response</a>  
-                          </div>
-                        </div>
-                      </label>
-                    </li>          
-                  </ul>                 
-                </li>
-              </ul>              
+          </nav>
+          <section id="header">
+            <div v-if="cameFromQualtrics" class="container-fluid alert alert-warning alert-dismissible fade show">
+              <span>NOTE: If you have just submitted a survey response, it may take a few minutes to be reflected on this page.</span>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>  
+            <div class="container-fluid d-flex flex-column flex-sm-row">
+              <div class="d-flex flex-column m-2">
+                <span>
+                  Select a round to display&nbsp;
+                  <i class="fas fa-info-circle text-secondary" data-bs-toggle="tooltip" title="Selecting a round only affects the information shown below. Survey responses are automatically assigned to a round based upon the time and date they are completed. We use UTC time for all responses, not your local time zone."></i>
+                </span>
+                <select v-model="displayedSurveyRoundIndex" class="form-select">
+                  <option v-for="(surveyRound, index) in surveyRounds" v-bind:value="index">
+                    ${surveyRound.roundId} (${surveyRound.startDate | renderUTCDate} to ${surveyRound.endDate | renderUTCDate})
+                  </option>
+                </select>
+              </div>
+              <div class="d-flex flex-column flex-grow-1 m-2">
+                <span>
+                  Global survey completion&nbsp;
+                  <i class="fas fa-info-circle text-secondary" data-bs-toggle="tooltip" title="The total percentage of countries for which survey responses have been received during the selected round."></i>
+                </span>
+                <div class="progress bg-no-response position-relative" style="height: 38px;">
+                  <div class="bg-has-response progress-bar" role="progressbar" v-bind:style="`width: ${getCompletion().percentage}%`" v-bind:aria-valuenow="getCompletion().percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                  <div class="progress-label">
+                    ${getCompletion().percentage}% (${getCompletion().completed} of ${getCompletion().total})
+                  </div>
+                </div>
+              </div>
             </div>
-          </li>
-        </ul>  
-      </section>
-      <section id="footer">
-        <div class="text-center">
-          <input type="checkbox" id="show-responsible-organization-metrics" onchange="document.querySelectorAll('.responsible-organization-metric').forEach((node) => {node.classList.toggle('hidden')})">
-          <label for="show-responsible-organization-metrics">Show counts for organizations</label> -
-          <a v-bind:href="null | newResponseBlankPracticeUrl" target="_blank">Submit a practice survey response</a> -
-          Version 1.3 - 
-          <a href="/login">Log out <i class="fas fa-sign-out-alt"></i></a>
-          <br /><br />
+          </section>
         </div>
-      </section>
+        <section id="map-section">
+          <div id="map" class="container-fluid text-center">
+            {% include worldmap-no-titles.svg %}
+          </div>
+        </section>
+        <section id="country-list">
+          <div class="container-fluid mx-auto m-2">
+            <div id="filter">
+              <label for="q" class="form-label">Quick find <i class="fas fa-info-circle text-secondary" data-bs-toggle="tooltip" title="Filter the list of countries below by entering a country name, organization, or region."></i></label>
+              <input id="country-filter" name="q" class="form-control" type="search" v-model="countryFilterText" placeholder="country name, organization, or region" aria-label="Filter for a country:">      
+            </div>  
+            <div id="response-status-view" class="mt-2">
+              <div class="w-100 fs-6 d-flex justify-content-end">
+                <button class="btn btn-link" onclick="document.querySelectorAll('.collapse-all').forEach(e => e.classList.remove('show'))"><i class="fas fa-minus" data-bs-toggle="tooltip" title="collapse all sections below"></i></button>
+                <button class="btn btn-link" onclick="document.querySelectorAll('.collapse-all').forEach(e => e.classList.add('show'))"><i class="fas fa-plus" data-bs-toggle="tooltip" title="expand all sections below"></i></button>
+              </div>
+              <div v-for="ro of renderModel" v-if="ro.wbRegions.flatMap(wbr => wbr.countries || []).length > 0" v-bind:class="`org-${ro.id}`" class="my-2">
+                <button class="btn w-100 d-flex flex-row justify-content-between align-items-center text-white" data-bs-toggle="collapse" v-bind:data-bs-target="`#collapse-${ro.id}`" v-bind:aria-controls="`#collapse-${ro.id}`" aria-expanded="true">
+                  <div>${ro.name}</div>
+                  <div v-if="showOrganizationCounts" class="progress bg-no-response w-25 position-relative" style="height: 38px;">
+                    <div class="bg-has-response progress-bar" role="progressbar" v-bind:style="`width: ${getCompletion(ro.id).percentage}%`" v-bind:aria-valuenow="getCompletion(ro.id).percentage" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                    <div class="progress-label">
+                      ${getCompletion(ro.id).percentage}% <span class="d-none d-sm-inline ms-1">(${getCompletion(ro.id).completed} of ${getCompletion(ro.id).total})</span> 
+                    </div>
+                </div>
+                </button>
+                <div v-bind:id="`collapse-${ro.id}`" class="collapse show collapse-all bg-region">
+                  <div v-for="wbr of ro.wbRegions" v-if="wbr.countries.length > 0" class="w-100">
+                    <button class="btn w-100 d-flex flex-row justify-content-between align-items-center text-white" data-bs-toggle="collapse" v-bind:data-bs-target="`#collapse-${ro.id}-${wbr.id}`" v-bind:aria-controls="`#collapse-${ro.id}-${wbr.id}`" aria-expanded="true">
+                      <div><b>${wbr.name} (${wbr.id})</b></div>
+                      <div class="progress bg-no-response w-25 position-relative" style="height: 38px;">
+                        <div class="bg-has-response progress-bar" role="progressbar" v-bind:style="`width: ${getCompletion(ro.id, wbr.id).percentage}%`" v-bind:aria-valuenow="getCompletion(ro.id, wbr.id).percentage" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                        <div class="progress-label">
+                          ${getCompletion(ro.id, wbr.id).percentage}% <span class="d-none d-sm-inline ms-1">(${getCompletion(ro.id, wbr.id).completed} of ${getCompletion(ro.id, wbr.id).total})</span> 
+                        </div>
+                    </div>
+                    </button>
+                    <div v-bind:id="`collapse-${ro.id}-${wbr.id}`" class="collapse show collapse-all">
+                      <div class="d-flex flex-row flex-wrap justify-content-start mx-auto bg-countries">
+                        <div v-for="country of wbr.countries" v-bind:class="{ 'bg-has-response': country.$displayedResponses, 'bg-no-response': !country.$displayedResponses }" class="m-3 p-3 country-card text-white" v-bind:key="country.id">
+                          <div class="text-truncate fs-4 lh-sm">
+                            <template v-if="country.$displayedResponses">
+                              <i v-if="country.$displayedResponses.length === 1" class="fas fa-circle"></i>
+                              <i v-else-if="country.$displayedResponses.length > 1" class="fas fa-certificate"></i>
+                              <i v-else class="fas fa-ban"></i>
+                            </template>
+                            <template v-else>
+                              <i class="fas fa-ban"></i>
+                            </template>
+                            ${country.fields.countryName}
+                          </div>
+                          <div class="smaller my-2">
+                            <template v-if="country.$displayedResponses" class="smaller my-2">
+                              ${country.$displayedResponses.length === 1 ? 'Response' : 'Responses'} received on ${country.$displayedResponses.map(dr => dr.date.toISOString().slice(0,10)).join(", ")}
+                            </template>
+                            <template v-else>
+                              ${displayedSurveyRoundIndex >= currentRoundIndex ? 'A response has not yet been received' : 'A response was not received'}
+                            </template>
+                          </div>
+                          <div>
+                            <a v-if="country.$displayedResponse && (displayedSurveyRoundIndex === currentRoundIndex)" v-bind:href="country | retakeCurrentResponseUrl" class="btn btn-lg btn-outline-warning bg-has-response text-warning" data-bs-toggle="tooltip" v-bind:title="`Edit the submitted survey response for ${country.fields.countryName}`">
+                              <i class="fas fa-redo"></i>
+                            </a>
+                            <a v-bind:href="country | newResponseBlankUrl" class="btn btn-lg" v-bind:class="[country.$displayedResponse ? 'btn-outline-light' : 'btn-outline-light bg-has-response', country.$displayedResponse ? 'text-white' : 'text-white']"  data-bs-toggle="tooltip" v-bind:title="`Start a new, blank survey response for ${country.fields.countryName}`">
+                              <i class="fas fa-plus-circle"></i>
+                            </a>
+                            <a v-bind:href="country | newResponseWithMostRecentAnswersUrl" class="btn btn-lg" v-bind:class="[country.$displayedResponse ? 'btn-outline-light' : 'btn-outline-light bg-has-response', country.$displayedResponse ? 'text-white' : 'text-white']"  data-bs-toggle="tooltip" v-bind:title="`Start a new survey response for ${country.fields.countryName}, using the most recent previous response`">
+                              <i class="fas fa-play-circle"></i>
+                            </a>
+                          </div>
+                        </div>    
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="timeline-offcanvas">
+          <div id="timeline" class="timeline offcanvas offcanvas-start overflow-auto p-3" tabindex="-1" aria-labelledby="timeline-label">
+            <button type="button" class="ms-auto btn-close text-reset sticky-top" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <div class="offcanvas-title fs-3" id="timeline-label">Data Timeline</div>
+            <div class="text-muted">Validation and publication dates are approximate. Checkmarks are automated.</div>
+            <ul class="list-unstyled">
+              <li v-for="event of dashboardEventTimeline" v-bind:id="event.date + event.label">
+                <i v-if="event.date < new Date()" class="fas fa-check-square"></i>
+                <i v-else class="far fa-square"></i>
+                <span>${event.date | renderUTCDate} - </span>
+                <span>${event.label}</span>
+              </li>
+            </ul>  
+          </div>  
+        </section>
+      </template>
     </div>
-  
+    
     <script>
+    var surveyBaseUrl = 'https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR'
 
-      var surveyBaseUrl = "https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR"
-
-      // extracts the unique list of organizations from countries data, and sets up an unassigned group for blank values
-      const getResponsibleOrganizations = (countries) => {
-        const responsibleOrganizations = new Set();
-        for (country of countries) {
-          if (country.fields.responsibleOrganization) {
-            responsibleOrganizations.add(country.fields.responsibleOrganization);
+    const vm = new Vue({
+      el: '#vue-app',
+      data () {
+        return {
+          apiUrl: 'https://api.covideducationrecovery.global/countries',
+          countries: [],
+          countryFilterText: '',
+          displayedSurveyRoundIndex: Number.MAX_VALUE,
+          loading: true,
+          errorMessage: undefined,
+          showOrganizationCounts: false,
+          surveyBaseUrl: 'https://jhukrieger.co1.qualtrics.com/jfe/form/SV_a4zG7F2zK5vfHyR',
+          surveyRounds: [
+            {startDate: Date.parse('2021-01-24T00:00:00.000Z'), endDate: Date.parse('2021-02-16T23:59:59.999Z'), roundId: 1},
+            {startDate: Date.parse('2021-02-17T00:00:00.000Z'), endDate: Date.parse('2021-03-04T23:59:59.999Z'), roundId: 2},
+            {startDate: Date.parse('2021-03-05T00:00:00.000Z'), endDate: Date.parse('2021-03-22T23:59:59.999Z'), roundId: 3},
+            {startDate: Date.parse('2021-03-23T00:00:00.000Z'), endDate: Date.parse('2021-04-05T23:59:59.999Z'), roundId: 4},
+            {startDate: Date.parse('2021-04-06T00:00:00.000Z'), endDate: Date.parse('2021-04-19T23:59:59.999Z'), roundId: 5},
+            {startDate: Date.parse('2021-04-20T00:00:00.000Z'), endDate: Date.parse('2021-05-10T23:59:59.999Z'), roundId: 6},
+            {startDate: Date.parse('2021-05-11T00:00:00.000Z'), endDate: Date.parse('2021-05-24T23:59:59.999Z'), roundId: 7},
+            {startDate: Date.parse('2021-05-25T00:00:00.000Z'), endDate: Date.parse('2021-06-07T23:59:59.999Z'), roundId: 8},
+            {startDate: Date.parse('2021-06-08T00:00:00.000Z'), endDate: Date.parse('2021-06-21T23:59:59.999Z'), roundId: 9},
+            {startDate: Date.parse('2021-06-22T00:00:00.000Z'), endDate: Date.parse('2021-07-05T23:59:59.999Z'), roundId: 10},
+            {startDate: Date.parse('2021-07-06T00:00:00.000Z'), endDate: Date.parse('2021-07-19T23:59:59.999Z'), roundId: 11},
+            {startDate: Date.parse('2021-07-20T00:00:00.000Z'), endDate: Date.parse('2021-08-02T23:59:59.999Z'), roundId: 12},
+            {startDate: Date.parse('2021-08-03T00:00:00.000Z'), endDate: Date.parse('2021-08-16T23:59:59.999Z'), roundId: 13},
+            {startDate: Date.parse('2021-08-17T00:00:00.000Z'), endDate: Date.parse('2021-08-31T23:59:59.999Z'), roundId: 14},
+            {startDate: Date.parse('2021-09-01T00:00:00.000Z'), endDate: Date.parse('2021-09-13T23:59:59.999Z'), roundId: 15},
+            {startDate: Date.parse('2021-09-14T00:00:00.000Z'), endDate: Date.parse('2021-09-27T23:59:59.999Z'), roundId: 16},
+            {startDate: Date.parse('2021-09-28T00:00:00.000Z'), endDate: Date.parse('2021-10-11T23:59:59.999Z'), roundId: 17},
+            {startDate: Date.parse('2021-10-12T00:00:00.000Z'), endDate: Date.parse('2021-10-25T23:59:59.999Z'), roundId: 18},
+            {startDate: Date.parse('2021-10-26T00:00:00.000Z'), endDate: Date.parse('2021-11-08T23:59:59.999Z'), roundId: 19},
+            {startDate: Date.parse('2021-11-09T00:00:00.000Z'), endDate: Date.parse('2021-11-22T23:59:59.999Z'), roundId: 20},
+            {startDate: Date.parse('2021-11-23T00:00:00.000Z'), endDate: Date.parse('2021-12-06T23:59:59.999Z'), roundId: 21},
+            {startDate: Date.parse('2021-12-07T00:00:00.000Z'), endDate: Date.parse('2021-12-20T23:59:59.999Z'), roundId: 22},
+            {startDate: Date.parse('2021-12-21T00:00:00.000Z'), endDate: Date.parse('2022-01-03T23:59:59.999Z'), roundId: 23},
+          ]
+        }
+      },
+      delimiters: ['${','}'],  // need to use these because jekyll competes for {{ and }}
+      async created () {
+        this.displayedSurveyRoundIndex = this.currentRoundIndex
+        // load critical data in this block; a failure will cause an error message to be diplayed
+        try {
+          if (JwtManager.token) {
+            const apiResponse = await fetch(this.apiUrl, {headers: {'Authorization': `Bearer ${JwtManager.token}`}})
+            if (apiResponse.ok) {
+              const apiData = await apiResponse.json()
+              this.countries.push(...this.processApiData(apiData))
+              this.loading = false
+            } else {
+              throw new Error(`Error loading the data. We apologize for the inconvenience; please try again later. (HTTP Error ${apiResponse.status}: ${apiResponse.statusText})`)
+            }
           } else {
-            responsibleOrganizations.add('unassigned');
+            window.location = '/login';
           }
+        } catch (e) {
+          console.error(e)
+          this.errorMessage = e.message
         }
-        return Array.from(responsibleOrganizations).sort();
-      }
-
-      // extracts the unique list of world bank regions from the countries data.
-      const getWorldBankRegions = (countries) => {
-        const worldBankRegions = new Map();
-        for (country of countries) {
-          worldBankRegions.set(country.fields.wbRegion, {wbRegionCode: country.fields.wbRegionCode, wbRegion: country.fields.wbRegion})
-        }
-        return Array.from(worldBankRegions.values()).sort((region1, region2) => {
-          return region1.wbRegion.localeCompare(region2.wbRegion);
-        });
-      }
-
-      // the counts on this page are hacky, not driven by data but instead by UI elements, though this does
-      // allow for different country groupings if desired. Elements expected to contain a count have an x-target
-      // attribute set to the ID of the element which has the checkboxes to be counted. If no checkboxes are found,
-      // nothing will be displayed. This function updates _all_ elements with the x-target attribute.
-      const updateListCounts = () => {
-        [...document.querySelectorAll('[x-target]')].forEach((node) => {
-          const xTarget = document.getElementById(node.attributes['x-target'].value);
-          if (xTarget) {
-            const totalCount = xTarget.querySelectorAll('li input[type="checkbox"]').length;
-            const checkedCount = xTarget.querySelectorAll('li input[type="checkbox"]:checked').length;
-            if (totalCount + checkedCount > 0) {
-              node.innerHTML = Math.round(checkedCount/totalCount*100) + '% (' + checkedCount + ' of ' + totalCount + ') complete';
-            }
+      },
+      methods: {
+        getCompletion (responsibleOrganization, wbRegionCode) {
+          let countries = this.countries.filter(c => c.fields.responsibleOrganization)
+          if (responsibleOrganization) {
+            const roExpression = new RegExp(responsibleOrganization, 'i')
+            countries = countries.filter(c => roExpression.test(c.fields.responsibleOrganization))
           }
-        })
-      }
-
-      // the map update is hacky, not driven by data but instead by UI elements
-      const updateMap = () => {
-        const worldMap = document.getElementById('svg-worldmap');
-
-        if (worldMap) {
-          //remove the existing 'has-response' class attributes from the map
-          [...worldMap.getElementsByClassName('has-response')].forEach((item) => {
-            item.classList.remove('has-response');
-          });
-
-          //set the 'has-response' class based upon the checked items from the document
-          [...document.querySelectorAll('#countries input[type="checkbox"]:checked')].forEach((item) => {
-            const iso3166Alpha2Code = item.id.split("-").pop().toLowerCase();
-            if (iso3166Alpha2Code) {
-              svgGroup = worldMap.getElementById(iso3166Alpha2Code)
-              if (svgGroup) {
-                svgGroup.classList.add('has-response');
-              }
+          if (wbRegionCode) {
+            const wrcExpression = new RegExp(wbRegionCode, 'i')
+            countries = countries.filter(c => wrcExpression.test(c.fields.wbRegionCode))
+          }
+          const total = countries.length
+          const completed = countries.filter(c => c.$displayedResponse).length
+          const percentage = Math.round(completed / total * 100)
+          return {total, completed, percentage}
+        },
+        processApiData (apiData) {
+          apiData.forEach((country) => {
+            country.qualricsResponses = []
+            if (country.fields.responseDates) {
+              country.fields.responseDates.forEach((responseDate, index) => {
+                country.qualricsResponses[index] = {
+                  airtableId: country.fields.responses[index],
+                  date: new Date(responseDate),
+                  link: country.fields.responseLinks[index],
+                  qualtricsResponseId: country.fields.responseQualtricsIds[index]
+                }
+              })
             }
           })
-        }
-      }
-
-      // returns the index of the round with the current date; if there isn't one, return the last one in the list
-      const getCurrentRoundIndex = (surveyRounds) => {
-        const now = Date.now();
-        for (const [index, surveyRound] of surveyRounds.entries()) {
-          if ((now => surveyRound.startDate) && (now < surveyRound.endDate)) {
-            return index
-          }
-        }
-        return surveyRounds.length - 1
-      }
-
-      // sets up additional data values to support simpler & faster rendering
-      const updateCountriesInRound = (countries, surveyRoundIndex, surveyRounds) => {
-        const surveyRound = surveyRounds[surveyRoundIndex];
-        for (country of countries) {
-          country.currentRoundResponseIndex = null;
-          country.hasCurrentRoundResponse = false;
-          if (country.fields.responseDates) {
-            country.fields.responseDates.forEach((responseDate, index) => {
-              if (responseDate >= surveyRound.startDate && responseDate < surveyRound.endDate) {
-                country.currentRoundResponseIndex = index;
-                country.hasCurrentRoundResponse = true;
+          return apiData
+            .map((country) => {
+              if (country.fields.responseDates) {
+                country.fields.responseDates.forEach((responseDate, i, responseDates) => {
+                  responseDates[i] = (Date.parse(responseDate));
+                });
               }
+              return country
             })
-          }
-        }
-      }
-
-      // replaces all the date values in country.responseDates with the numeric equivalent
-      const convertCountryResponseDates = (countries) => {
-        for (country of countries) {
-          if (country.fields.responseDates) {
-            country.fields.responseDates.forEach((responseDate, i, responseDates) => {
-              responseDates[i] = (Date.parse(responseDate));
+            .sort((country1, country2) => {
+              return country1.fields.countryName.localeCompare(country2.fields.countryName)
             });
+        },
+        updateCountriesInRound () {
+          const surveyRound = this.surveyRounds[this.displayedSurveyRoundIndex];
+          for (country of this.countries) {
+            if (country.fields.responseDates) {
+              const currentRoundResponses = country.qualricsResponses
+                .filter(response => response.date >= surveyRound.startDate && response.date < surveyRound.endDate)
+              if (currentRoundResponses.length > 0) {
+                country.$displayedResponse = currentRoundResponses.slice(-1).pop()
+                country.$displayedResponses = currentRoundResponses
+              } else {
+                delete country.$displayedResponse
+                delete country.$displayedResponses
+              }              
+            }
+          }
+        },
+        updateMap () {
+          const worldMap = document.getElementById('svg-worldmap');
+          if (worldMap) {
+            //remove the existing 'has-response' class attributes from the map
+            [...worldMap.getElementsByClassName('has-response')]
+              .forEach((item) => {
+                item.classList.remove('has-response');
+              });
+
+            // set the has-response class attribute for each country which has the hasCurrentRoundResponse flag set
+            for (country of this.countries.filter(c => c.$displayedResponse)) {
+              const iso3166Alpha2Code = country.fields.iso3166Alpha2Code
+              if (iso3166Alpha2Code) {
+                const svgGroup = worldMap.getElementById(country.fields.iso3166Alpha2Code.toLowerCase())
+                if (svgGroup) {
+                  svgGroup.classList.add('has-response')
+                }
+              }
+            }
+          }
+        },
+        updateTimelineScroll () {
+          const now = new Date()
+          const eventObject = this.dashboardEventTimeline.find(event => event.date > now)
+          const eventElement = document.getElementById(eventObject.date + eventObject.label)
+          if (eventElement) {
+            eventElement.parentElement.scrollTop = eventElement.offsetTop - 250
+          }
+        }
+      },
+      computed: {
+        cameFromQualtrics () {
+          return document.referrer.toLowerCase().includes('qualtrics');
+        },
+        currentRoundIndex () {
+          const now = Date.now();
+          for (const [index, surveyRound] of this.surveyRounds.entries()) {
+            if ((now => surveyRound.startDate) && (now < surveyRound.endDate)) {
+              return index
+            }
+          }
+          return this.surveyRounds.length - 1
+        },
+        dashboardEventTimeline () {
+          const events = this.surveyRounds
+            .flatMap((sr) => {
+              return [
+                { date: sr.startDate, label: `Round ${sr.roundId} begins`},
+                { date: sr.endDate, label: `Round ${sr.roundId} ends`},
+                { date: sr.endDate + (10 * 86400000), label: `Round ${sr.roundId} validation complete`},
+                { date: sr.endDate + (14 * 86400000), label: `Round ${sr.roundId} publication`}
+              ]
+            })
+            .sort((a, b) => a.date - b.date)
+          return events
+        },
+        displayedSurveyRound () {
+          return {
+            ...this.surveyRounds[this.displayedSurveyRoundIndex],
+            validationCompletionDate: this.surveyRounds[this.displayedSurveyRoundIndex].endDate + (10 * 86400000),
+            publicationDate: this.surveyRounds[this.displayedSurveyRoundIndex].endDate + (14 * 86400000)
+          }
+        },
+        filteredCountries () {
+          if (this.countryFilterText) {
+            const filterExpression = new RegExp(this.countryFilterText, 'i')
+            return this.countries.filter(country => 
+              filterExpression.test(country.fields.countryName) 
+              || filterExpression.test(country.fields.wbRegion) 
+              || filterExpression.test(country.fields.wbRegionCode)
+              || filterExpression.test(country.fields.responsibleOrganization)
+            )
+          }
+          return this.countries
+        },
+        globalCompletion () {
+          const total = this.countries.length
+          const completed = this.countries.filter(c => c.$displayedResponse).length
+          const percentage = Math.round(completed/total * 100)
+          return {
+            total, completed, percentage
+          }
+        },
+        renderModel () {
+          return this.responsibleOrganizations.map(ro => {
+            return {
+              id: ro.toLowerCase(),
+              name: ro,
+              isUnassigned: ro === 'unassigned',
+              wbRegions: this.wbRegions.map(wbr => {
+                return {
+                  id: wbr.wbRegionCode.toLowerCase(),
+                  name: wbr.wbRegion,
+                  countries: this.filteredCountries.filter(country => 
+                    country.fields.wbRegionCode === wbr.wbRegionCode && country.fields.responsibleOrganization === ro
+                  )
+                }
+              })
+            }
+          })
+        },
+        responsibleOrganizations () {
+          return this.countries
+            .reduce((result, country) => {
+              const ro = country.fields.responsibleOrganization || 'unassigned';
+              if (!result.includes(ro)) {
+                result.push(ro);
+              }
+              return result;
+            }, [])
+            .sort()
+        },
+        wbRegions () {
+          return this.countries
+            .reduce((result, country) => {
+              if (!result.find(wbRegion => wbRegion.wbRegionCode === country.fields.wbRegionCode)) {
+                result.push({
+                  wbRegionCode: country.fields.wbRegionCode,
+                  wbRegion: country.fields.wbRegion
+                })
+              }
+              return result
+            }, [])
+            .sort((a, b) => a.wbRegionCode.localeCompare(b.wbRegionCode))
+        }
+      },
+      mounted () {
+        this.updateMap();
+        this.updateTimelineScroll();
+      },
+      beforeUpdate () {
+        this.updateCountriesInRound(this.countries, this.displayedSurveyRoundIndex, this.surveyRounds);
+      },
+      updated () {
+        // these methods require the UX to be rendered, so do it after nextTick();
+        vm.$nextTick(() => {
+          this.updateMap()
+          var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+          var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+          })
+        })
+      },
+      filters: {
+        newResponseBlankPracticeUrl () {
+          return `${surveyBaseUrl}?testing=true`
+        },
+        newResponseBlankUrl (country) {
+          return `${surveyBaseUrl}?Q_PopulateResponse={"QID30":"${country.fields.qualtricsId}"}`
+        },
+        newResponseWithMostRecentAnswersUrl (country) {
+          if (country.fields.responseQualtricsIds) {
+            const mostRecentQualtricsResponseId = [...country.fields.responseQualtricsIds].pop();
+            return `${surveyBaseUrl}?Q_R=${mostRecentQualtricsResponseId}`
+          } else {
+            return null;
+          }
+        },
+        renderUTCDate: (value) => {
+          const thisDate = new Date(value);
+          return thisDate.toISOString().slice(0, 10);
+        },
+        retakeCurrentResponseUrl (country) {
+          if (country.fields.responseQualtricsIds && country.hasCurrentRoundResponse) {
+            const qualtricsResponseId = country.fields.responseQualtricsIds[country.currentRoundResponseIndex];
+            return `${surveyBaseUrl}?Q_R=${qualtricsResponseId}&Q_R_DEL=1`
+          } else {
+            return null;
           }
         }
       }
-
-      // this function optimizes the data sent from the API for faster rendering in-browser
-      const prepareData = (fetchResponse) => {
-        const countries = fetchResponse;
-        const vueData = {};
-
-        // sort the country list by country name ascending
-        vueData.countries = countries.sort((country1, country2) => {
-          return country1.fields.countryName.localeCompare(country2.fields.countryName)
-        });
-
-        // convert the dates in the country list to epoch milliseconds
-        convertCountryResponseDates(vueData.countries);
-
-        // create a list of unique world bank regions
-        vueData.wbRegions = getWorldBankRegions(vueData.countries)
-
-        // create a list of unique organizations
-        vueData.responsibleOrganizations = getResponsibleOrganizations(vueData.countries);
-
-        // flag to display a note if the page visited before this one was qualtrics
-        vueData.cameFromQualtrics = document.referrer.toLowerCase().includes('qualtrics');
-
-        // TODO: move this to API / data source
-        vueData.surveyRounds = [
-          {startDate: Date.parse('2021-01-24T00:00:00.000Z'), endDate: Date.parse('2021-02-16T23:59:59.999Z'), roundId: 1},
-          {startDate: Date.parse('2021-02-17T00:00:00.000Z'), endDate: Date.parse('2021-03-04T23:59:59.999Z'), roundId: 2},
-          {startDate: Date.parse('2021-03-05T00:00:00.000Z'), endDate: Date.parse('2021-03-22T23:59:59.999Z'), roundId: 3},
-          {startDate: Date.parse('2021-03-23T00:00:00.000Z'), endDate: Date.parse('2021-04-05T23:59:59.999Z'), roundId: 4},
-          {startDate: Date.parse('2021-04-06T00:00:00.000Z'), endDate: Date.parse('2021-04-19T23:59:59.999Z'), roundId: 5},
-          {startDate: Date.parse('2021-04-20T00:00:00.000Z'), endDate: Date.parse('2021-05-10T23:59:59.999Z'), roundId: 6},
-          {startDate: Date.parse('2021-05-11T00:00:00.000Z'), endDate: Date.parse('2021-05-24T23:59:59.999Z'), roundId: 7},
-          {startDate: Date.parse('2021-05-25T00:00:00.000Z'), endDate: Date.parse('2021-06-07T23:59:59.999Z'), roundId: 8},
-          {startDate: Date.parse('2021-06-08T00:00:00.000Z'), endDate: Date.parse('2021-06-21T23:59:59.999Z'), roundId: 9},
-          {startDate: Date.parse('2021-06-22T00:00:00.000Z'), endDate: Date.parse('2021-07-05T23:59:59.999Z'), roundId: 10},
-          {startDate: Date.parse('2021-07-06T00:00:00.000Z'), endDate: Date.parse('2021-07-19T23:59:59.999Z'), roundId: 11},
-          {startDate: Date.parse('2021-07-20T00:00:00.000Z'), endDate: Date.parse('2021-08-02T23:59:59.999Z'), roundId: 12},
-          {startDate: Date.parse('2021-08-03T00:00:00.000Z'), endDate: Date.parse('2021-08-16T23:59:59.999Z'), roundId: 13},
-          {startDate: Date.parse('2021-08-17T00:00:00.000Z'), endDate: Date.parse('2021-08-31T23:59:59.999Z'), roundId: 14},
-          {startDate: Date.parse('2021-09-01T00:00:00.000Z'), endDate: Date.parse('2021-09-13T23:59:59.999Z'), roundId: 15},
-          {startDate: Date.parse('2021-09-14T00:00:00.000Z'), endDate: Date.parse('2021-09-27T23:59:59.999Z'), roundId: 16},
-          {startDate: Date.parse('2021-09-28T00:00:00.000Z'), endDate: Date.parse('2021-10-11T23:59:59.999Z'), roundId: 17}
-        ]
-
-        // select the survey round to display based upon the current date
-        vueData.currentSurveyRoundIndex = getCurrentRoundIndex(vueData.surveyRounds);
-
-        // set display flags and reference indexes within the country data, based upon survey round
-        //   this function is also called each time the dropdown is changed
-        updateCountriesInRound(vueData.countries, vueData.currentSurveyRoundIndex, vueData.surveyRounds);
-
-        return vueData
-      }
-
-      // primary function for the page. Once fetch loads the data, it calls this function to do the rest.
-      const renderData = (countries) => {
-        const data = prepareData(countries);    
-
-        vm = new Vue({
-          el: '#vue-app',
-          data: data,
-          delimiters: ['${','}'],  // need to use these because jekyll competes for {{ and }}
-          methods: {
-            filterCountries: (countries, responsibleOrganization, wbRegionCode) => {
-              return countries.filter((country) => {
-                return (((country.fields.responsibleOrganization || 'unassigned') === responsibleOrganization) && (country.fields.wbRegionCode === wbRegionCode))
-              });
-            }
-          },
-          mounted: () => {
-            updateListCounts();
-            updateMap();
-            document.getElementById('loading').classList.add('hidden');
-          },
-          beforeUpdate: () => {
-            updateCountriesInRound(vm.$data.countries, vm.$data.currentSurveyRoundIndex, vm.$data.surveyRounds);
-          },
-          updated: () => {
-            // these methods require the UX to be rendered, so do it after nextTick();
-            vm.$nextTick(() => {
-              updateListCounts();
-              updateMap();
-            })
-          },
-          filters: {
-            previewResponseUrl: (country) => {
-              if (country.fields.responseLinks && country.hasCurrentRoundResponse) {
-                const responseLink = country.fields.responseLinks[country.currentRoundResponseIndex];
-                if (responseLink && responseLink != '#') {
-                  return responseLink
-                }
-              }
-              return null;
-            },
-            retakeCurrentResponseUrl: (country) => {
-              if (country.fields.responseQualtricsIds && country.hasCurrentRoundResponse) {
-                const qualtricsResponseId = country.fields.responseQualtricsIds[country.currentRoundResponseIndex];
-                return `${surveyBaseUrl}?Q_R=${qualtricsResponseId}&Q_R_DEL=1`
-              } else {
-                return null;
-              }
-            },
-            newResponseWithMostRecentAnswersUrl: (country) => {
-              if (country.fields.responseQualtricsIds) {
-                const mostRecentQualtricsResponseId = [...country.fields.responseQualtricsIds].pop();
-                return `${surveyBaseUrl}?Q_R=${mostRecentQualtricsResponseId}`
-              } else {
-                return null;
-              }
-            },
-            newResponseBlankUrl: (country) => {
-              return `${surveyBaseUrl}?Q_PopulateResponse={"QID30":"${country.fields.qualtricsId}"}`
-            },
-            newResponseBlankPracticeUrl: () => {
-              return `${surveyBaseUrl}?testing=true`
-            },
-            lastResponseAge: (value) => {
-              if (value) {
-                lastDate = new Date(Array.from(value).pop())
-                currentDate = new Date();
-                difference = Math.floor((currentDate - lastDate) / 86400000);
-                if (difference === 1) {
-                  return '1 day ago'
-                } else {
-                  return `${difference} days ago`
-                }
-              }
-              return 'never'
-            },
-            renderUTCDate: (value) => {
-              const thisDate = new Date(value);
-              return `${thisDate.getUTCFullYear().toString()}-${(thisDate.getUTCMonth() + 1).toString().padStart(2, '0')}-${(thisDate.getUTCDate()).toString().padStart(2,'0')}`
-            }
-            
-          }
-        });
-      }
-
-
-      {% if site.safe == true %}
-      const dataSource = 'https://api.covideducationrecovery.global/countries';
-      {% else %}
-      const dataSource = 'https://api.covideducationrecovery.global/countries';
-      {% endif %}
-
-      // if we have a token, use it to call the api, otherwise redirect to login screen
-      if (JwtManager.token) {
-        fetch(dataSource, {headers: {'Authorization': `Bearer ${JwtManager.token}`}})
-          .then(response => {
-            switch (response.status) {
-              case 200:
-                // huzzah we have the data
-                response.json().then(data => renderData(data));
-                break;
-              case 403: 
-                // denied because of invalid token
-                window.location = '/login';
-                break;
-              default:
-            }
-          })
-          .catch(error => {
-            document.getElementById(`loading`).innerText = "Error loading the data. We apologize for the inconvenience; please try again later.";
-            console.error(error);
-          })
-      } else {
-        window.location = '/login';
-      }
+    })
     </script>
   </body>
 </html>
