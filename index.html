@@ -196,7 +196,7 @@
                 <div v-bind:id="`collapse-${ro.id}`" class="collapse show collapse-all bg-region">
                   <div v-for="wbr of ro.wbRegions" v-if="wbr.countries.length > 0" class="w-100">
                     <button class="btn w-100 d-flex flex-row justify-content-between align-items-center text-white" data-bs-toggle="collapse" v-bind:data-bs-target="`#collapse-${ro.id}-${wbr.id}`" v-bind:aria-controls="`#collapse-${ro.id}-${wbr.id}`" aria-expanded="true">
-                      <div><b>${wbr.name} (${wbr.id})</b></div>
+                      <div><b>${wbr.name} <span class="text-uppercase">(${wbr.id})</span></b></div>
                       <div class="progress bg-no-response w-25 position-relative" style="height: 38px;">
                         <div class="bg-has-response progress-bar" role="progressbar" v-bind:style="`width: ${getCompletion(ro.id, wbr.id).percentage}%`" v-bind:aria-valuenow="getCompletion(ro.id, wbr.id).percentage" aria-valuemin="0" aria-valuemax="100">
                         </div>
